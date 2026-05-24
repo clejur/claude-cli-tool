@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar'
 import { ProjectCard } from './components/ProjectCard'
 import { AddProjectDialog } from './components/AddProjectDialog'
 import { EditProjectDialog } from './components/EditProjectDialog'
+import { ImportDialog } from './components/ImportDialog'
 import { WorkspaceMenu } from './components/WorkspaceMenu'
 import { useGroups } from './hooks/useGroups'
 import { useProjects } from './hooks/useProjects'
@@ -12,9 +13,10 @@ import { model } from '../wailsjs/go/models'
 function App() {
   const [selectedGroup, setSelectedGroup] = useState('')
   const [showAddDialog, setShowAddDialog] = useState(false)
+  const [showImportDialog, setShowImportDialog] = useState(false)
   const [editingProject, setEditingProject] = useState<model.Project | null>(null)
   const { groups, add: addGroup } = useGroups()
-  const { projects, statuses, start, remove, add, edit } = useProjects(selectedGroup)
+  const { projects, statuses, start, remove, add, edit, refresh } = useProjects(selectedGroup)
   const { workspaces, save: saveWorkspace, restore: restoreWorkspace, remove: removeWorkspace } = useWorkspaces()
 
   const handleRemove = async (id: string) => {
@@ -47,6 +49,12 @@ function App() {
               onRemove={removeWorkspace}
               projectNames={projects.map(p => p.name)}
             />
+            <button
+              onClick={() => setShowImportDialog(true)}
+              className="px-4 py-2 text-sm bg-green-700 hover:bg-green-600 rounded"
+            >
+              Import
+            </button>
             <button
               onClick={() => setShowAddDialog(true)}
               className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded"
@@ -85,6 +93,12 @@ function App() {
           groups={groups}
           onEdit={edit}
           onClose={() => setEditingProject(null)}
+        />
+      )}
+      {showImportDialog && (
+        <ImportDialog
+          onImported={refresh}
+          onClose={() => setShowImportDialog(false)}
         />
       )}
     </div>

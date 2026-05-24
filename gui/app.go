@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/clejur/claude-launcher/internal/config"
 	"github.com/clejur/claude-launcher/internal/group"
@@ -117,6 +119,38 @@ func (a *App) GetStatus() ([]ProjectStatusResult, error) {
 		})
 	}
 	return results, nil
+}
+
+// Import bindings
+
+type DetectedProcess struct {
+	PID int32  `json:"pid"`
+	Cwd string `json:"cwd"`
+}
+
+func (a *App) DetectUnregistered() ([]DetectedProcess, error) {
+	processes, err := status.ScanProcesses()
+	if err != nil {
+		return nil, err
+	}
+	projects, err := a.projectSvc.List("")
+	if err != nil {
+		return nil, err
+	}
+
+	registered := make(map[string]bool)
+	for _, p := range projects {
+		registered[strings.ToLower(filepath.Clean(p.Path))] = true
+	}
+
+	var result []DetectedProcess
+	for _, proc := range processes {
+		key := strings.ToLower(filepath.Clean(proc.Cwd))
+		if !registered[key] {
+			result = append(result, DetectedProcess{PID: proc.PID, Cwd: proc.Cwd})
+		}
+	}
+	return result, nil
 }
 
 // Group bindings
