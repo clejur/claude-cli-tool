@@ -12,10 +12,21 @@ export function Sidebar({ groups, selectedGroup, onSelectGroup, onAddGroup }: Si
   const t = useT()
   const { lang, setLang } = useLang()
   const [showSettings, setShowSettings] = useState(false)
+  const [showGroupInput, setShowGroupInput] = useState(false)
+  const [groupName, setGroupName] = useState('')
 
-  const handleAddGroup = () => {
-    const name = prompt(t.groupNamePrompt)
-    if (name) onAddGroup(name)
+  const handleGroupSubmit = () => {
+    const trimmed = groupName.trim()
+    if (trimmed) {
+      onAddGroup(trimmed)
+      setGroupName('')
+      setShowGroupInput(false)
+    }
+  }
+
+  const handleGroupKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleGroupSubmit()
+    if (e.key === 'Escape') { setShowGroupInput(false); setGroupName('') }
   }
 
   return (
@@ -42,12 +53,31 @@ export function Sidebar({ groups, selectedGroup, onSelectGroup, onAddGroup }: Si
           </button>
         ))}
       </nav>
-      <button
-        onClick={handleAddGroup}
-        className="mt-4 w-full px-3 py-2 text-sm text-gray-400 border border-dashed border-gray-600 rounded hover:border-gray-400 hover:text-gray-200"
-      >
-        {t.addGroup}
-      </button>
+      {showGroupInput ? (
+        <div className="mt-4 flex gap-1">
+          <input
+            value={groupName}
+            onChange={(e) => setGroupName(e.target.value)}
+            onKeyDown={handleGroupKeyDown}
+            autoFocus
+            className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-sm min-w-0"
+            placeholder={t.groupNamePrompt}
+          />
+          <button
+            onClick={handleGroupSubmit}
+            className="px-2 py-1.5 text-sm bg-blue-600 hover:bg-blue-500 rounded"
+          >
+            OK
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setShowGroupInput(true)}
+          className="mt-4 w-full px-3 py-2 text-sm text-gray-400 border border-dashed border-gray-600 rounded hover:border-gray-400 hover:text-gray-200"
+        >
+          {t.addGroup}
+        </button>
+      )}
       <div className="mt-4 pt-4 border-t border-gray-700">
         <button
           onClick={() => setShowSettings(!showSettings)}
