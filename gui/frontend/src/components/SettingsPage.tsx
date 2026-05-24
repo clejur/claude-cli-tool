@@ -4,9 +4,10 @@ import { GetAutoStart, SetAutoStart, GetCloseToTray, SetCloseToTray, ExportConfi
 
 interface SettingsPageProps {
   onBack: () => void
+  onImport?: () => void
 }
 
-export function SettingsPage({ onBack }: SettingsPageProps) {
+export function SettingsPage({ onBack, onImport }: SettingsPageProps) {
   const t = useT()
   const { lang, setLang } = useLang()
   const [autoStart, setAutoStartState] = useState(false)
@@ -107,7 +108,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
               {t.exportConfig}
             </button>
             <button
-              onClick={() => ImportConfig()}
+              onClick={async () => { await ImportConfig(); onImport?.() }}
               className="flex-1 px-5 py-2.5 text-sm font-semibold text-secondary bg-white border-2 border-secondary rounded-pill hover:bg-secondary hover:text-white transition-all duration-300"
             >
               {t.importConfig}

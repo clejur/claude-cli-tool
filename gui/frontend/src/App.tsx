@@ -29,9 +29,13 @@ function App() {
   const [editingProject, setEditingProject] = useState<model.Project | null>(null)
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; project: model.Project } | null>(null)
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
-  const { groups, add: addGroup } = useGroups()
+  const { groups, refresh: refreshGroups, add: addGroup } = useGroups()
   const { projects, statuses, start, remove, add, edit, refresh } = useProjects(selectedGroup)
   const { workspaces, refresh: refreshWorkspaces, save: saveWorkspace, restore: restoreWorkspace, remove: removeWorkspace } = useWorkspaces()
+
+  const refreshAll = useCallback(async () => {
+    await Promise.all([refresh(), refreshGroups(), refreshWorkspaces()])
+  }, [refresh, refreshGroups, refreshWorkspaces])
 
   const filteredProjects = projects.filter(p =>
     !search ||
@@ -129,7 +133,7 @@ function App() {
         settingsActive={currentPage === 'settings'}
       />
       {currentPage === 'settings' ? (
-        <SettingsPage onBack={() => setCurrentPage('projects')} />
+        <SettingsPage onBack={() => setCurrentPage('projects')} onImport={refreshAll} />
       ) : currentPage === 'workspace' && selectedWorkspace ? (
         <WorkspacePage
           workspace={selectedWorkspace}
