@@ -40,9 +40,16 @@ export const locales = {
 
     // WorkspaceMenu
     workspaces: 'Workspaces',
-    saveWorkspace: '+ Save current as workspace',
-    workspaceNamePrompt: 'Workspace name:',
+    saveWorkspace: '+ Save workspace',
     noWorkspaces: 'No workspaces saved.',
+
+    // SaveWorkspaceDialog
+    saveWorkspaceTitle: 'Save Workspace',
+    workspaceName: 'Workspace Name',
+    workspaceNamePlaceholder: 'e.g. daily-dev',
+    selectProjects: 'Select running projects to include:',
+    noRunningProjects: 'No projects are currently running.',
+    workspaceNameRequired: 'Workspace name is required',
 
     // ImportDialog
     importTitle: 'Import Running Processes',
@@ -96,9 +103,15 @@ export const locales = {
     save: '保存',
 
     workspaces: '工作区',
-    saveWorkspace: '+ 保存当前为工作区',
-    workspaceNamePrompt: '工作区名称：',
+    saveWorkspace: '+ 保存工作区',
     noWorkspaces: '暂无已保存的工作区。',
+
+    saveWorkspaceTitle: '保存工作区',
+    workspaceName: '工作区名称',
+    workspaceNamePlaceholder: '例如 daily-dev',
+    selectProjects: '选择要包含的运行中项目：',
+    noRunningProjects: '当前没有正在运行的项目。',
+    workspaceNameRequired: '工作区名称为必填项',
 
     importTitle: '导入运行中的进程',
     scanning: '正在扫描进程...',

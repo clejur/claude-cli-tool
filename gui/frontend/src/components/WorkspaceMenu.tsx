@@ -5,21 +5,13 @@ import { useT } from '../i18n/context'
 interface WorkspaceMenuProps {
   workspaces: model.Workspace[]
   onRestore: (name: string) => void
-  onSave: (name: string, projectNames: string[]) => void
+  onSave: () => void
   onRemove: (name: string) => void
-  projectNames: string[]
 }
 
-export function WorkspaceMenu({ workspaces, onRestore, onSave, onRemove, projectNames }: WorkspaceMenuProps) {
+export function WorkspaceMenu({ workspaces, onRestore, onSave, onRemove }: WorkspaceMenuProps) {
   const t = useT()
   const [open, setOpen] = useState(false)
-
-  const handleSave = () => {
-    const name = prompt(t.workspaceNamePrompt)
-    if (!name) return
-    onSave(name, projectNames)
-    setOpen(false)
-  }
 
   return (
     <div className="relative">
@@ -33,7 +25,7 @@ export function WorkspaceMenu({ workspaces, onRestore, onSave, onRemove, project
         <div className="absolute right-0 top-full mt-1 w-64 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50">
           <div className="p-2 border-b border-gray-700">
             <button
-              onClick={handleSave}
+              onClick={() => { onSave(); setOpen(false) }}
               className="w-full text-left px-3 py-2 text-sm text-blue-400 hover:bg-gray-700 rounded"
             >
               {t.saveWorkspace}

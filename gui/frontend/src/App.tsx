@@ -4,6 +4,7 @@ import { ProjectCard } from './components/ProjectCard'
 import { AddProjectDialog } from './components/AddProjectDialog'
 import { EditProjectDialog } from './components/EditProjectDialog'
 import { ImportDialog } from './components/ImportDialog'
+import { SaveWorkspaceDialog } from './components/SaveWorkspaceDialog'
 import { WorkspaceMenu } from './components/WorkspaceMenu'
 import { useGroups } from './hooks/useGroups'
 import { useProjects } from './hooks/useProjects'
@@ -16,6 +17,7 @@ function App() {
   const [selectedGroup, setSelectedGroup] = useState('')
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showImportDialog, setShowImportDialog] = useState(false)
+  const [showSaveWorkspaceDialog, setShowSaveWorkspaceDialog] = useState(false)
   const [editingProject, setEditingProject] = useState<model.Project | null>(null)
   const { groups, add: addGroup } = useGroups()
   const { projects, statuses, start, remove, add, edit, refresh } = useProjects(selectedGroup)
@@ -47,9 +49,8 @@ function App() {
             <WorkspaceMenu
               workspaces={workspaces}
               onRestore={restoreWorkspace}
-              onSave={saveWorkspace}
+              onSave={() => setShowSaveWorkspaceDialog(true)}
               onRemove={removeWorkspace}
-              projectNames={projects.map(p => p.name)}
             />
             <button
               onClick={() => setShowImportDialog(true)}
@@ -101,6 +102,12 @@ function App() {
         <ImportDialog
           onImported={refresh}
           onClose={() => setShowImportDialog(false)}
+        />
+      )}
+      {showSaveWorkspaceDialog && (
+        <SaveWorkspaceDialog
+          onSave={saveWorkspace}
+          onClose={() => setShowSaveWorkspaceDialog(false)}
         />
       )}
     </div>
