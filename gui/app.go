@@ -37,6 +37,7 @@ func NewApp() *App {
 
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+	a.registerHotkey()
 }
 
 func (a *App) Quit() {
