@@ -3,6 +3,12 @@ import { SelectDirectory } from '../../wailsjs/go/main/App'
 import { useT, useTranslateError } from '../i18n/context'
 import { Select } from './Select'
 
+const commandPresets = [
+  { flag: '--continue', label: '--continue' },
+  { flag: '--resume', label: '--resume' },
+  { flag: '--fork-session', label: '--fork-session' },
+]
+
 interface AddProjectDialogProps {
   groups: string[]
   onAdd: (name: string, label: string, path: string, command: string, group: string) => Promise<void>
@@ -15,7 +21,7 @@ export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogPro
   const [name, setName] = useState('')
   const [label, setLabel] = useState('')
   const [path, setPath] = useState('')
-  const [command, setCommand] = useState('claude')
+  const [command, setCommand] = useState('claude --continue')
   const [group, setGroup] = useState('')
   const [error, setError] = useState('')
 
@@ -41,6 +47,17 @@ export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogPro
         <h2 className="text-lg font-bold font-heading mb-4">{t.addProjectTitle}</h2>
         {error && <p className="text-red-500 text-sm mb-3 bg-red-50 px-3 py-2 rounded-xl">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-3">
+          <div>
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.group}</label>
+            <Select
+              value={group}
+              onChange={setGroup}
+              options={[
+                { value: '', label: t.noGroup },
+                ...groups.map(g => ({ value: g, label: g })),
+              ]}
+            />
+          </div>
           <div>
             <label className="block text-sm text-content-muted font-medium mb-1">{t.nameRequired}</label>
             <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder={t.namePlaceholder} />
@@ -68,17 +85,31 @@ export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogPro
           <div>
             <label className="block text-sm text-content-muted font-medium mb-1">{t.command}</label>
             <input value={command} onChange={(e) => setCommand(e.target.value)} className={inputClass} />
-          </div>
-          <div>
-            <label className="block text-sm text-content-muted font-medium mb-1">{t.group}</label>
-            <Select
-              value={group}
-              onChange={setGroup}
-              options={[
-                { value: '', label: t.noGroup },
-                ...groups.map(g => ({ value: g, label: g })),
-              ]}
-            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {commandPresets.map(p => {
+                const active = command.includes(p.flag)
+                return (
+                  <button
+                    key={p.flag}
+                    type="button"
+                    onClick={() => {
+                      if (active) {
+                        setCommand(command.replace(` ${p.flag}`, '').replace(p.flag, '').trim())
+                      } else {
+                        setCommand((command + ' ' + p.flag).trim())
+                      }
+                    }}
+                    className={`px-2.5 py-1 text-xs rounded-full border transition-all ${
+                      active
+                        ? 'bg-primary/10 border-primary text-primary font-semibold'
+                        : 'border-border text-content-muted hover:border-primary hover:text-primary'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                )
+              })}
+            </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="px-5 py-2 text-sm text-content-muted hover:text-content font-medium">

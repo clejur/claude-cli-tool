@@ -25,12 +25,12 @@ func (l *Launcher) BuildArgs(projects []model.Project) []string {
 		if i > 0 {
 			args = append(args, ";")
 		}
+		launchCmd := p.Command + " --name " + `"` + p.Label + `"`
 		args = append(args,
 			"new-tab",
-			"--title", "✳ "+p.Label,
-			"--suppressApplicationTitle",
+			"--title", p.Label,
 			"--startingDirectory", p.Path,
-			shell, "-NoExit", "-Command", p.Command,
+			shell, "-NoExit", "-Command", launchCmd,
 		)
 	}
 	return args
