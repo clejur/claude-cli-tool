@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { useT } from '../i18n/context'
+import { SelectDirectory } from '../../wailsjs/go/main/App'
+import { useT, useTranslateError } from '../i18n/context'
+import { Select } from './Select'
 
 interface AddProjectDialogProps {
   groups: string[]
@@ -9,6 +11,7 @@ interface AddProjectDialogProps {
 
 export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogProps) {
   const t = useT()
+  const translateError = useTranslateError()
   const [name, setName] = useState('')
   const [label, setLabel] = useState('')
   const [path, setPath] = useState('')
@@ -26,69 +29,62 @@ export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogPro
       await onAdd(name, label || name, path, command, group)
       onClose()
     } catch (err: any) {
-      setError(err.toString())
+      setError(translateError(err))
     }
   }
 
+  const inputClass = "w-full border-2 border-border rounded-input px-4 py-3 text-sm bg-white focus:outline-none focus:border-primary focus:shadow-[0_0_0_4px_rgba(224,122,95,0.1)] transition-all placeholder:text-content-subtle"
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-lg p-6 w-[420px] border border-gray-600">
-        <h2 className="text-lg font-bold mb-4">{t.addProjectTitle}</h2>
-        {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+      <div className="bg-white rounded-card p-6 w-[420px] border border-border shadow-xl">
+        <h2 className="text-lg font-bold font-heading mb-4">{t.addProjectTitle}</h2>
+        {error && <p className="text-red-500 text-sm mb-3 bg-red-50 px-3 py-2 rounded-xl">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-sm text-gray-400 mb-1">{t.nameRequired}</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm"
-              placeholder={t.namePlaceholder}
-            />
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.nameRequired}</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder={t.namePlaceholder} />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-1">{t.tabLabel}</label>
-            <input
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm"
-              placeholder={t.labelPlaceholder}
-            />
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.tabLabel}</label>
+            <input value={label} onChange={(e) => setLabel(e.target.value)} className={inputClass} placeholder={t.labelPlaceholder} />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-1">{t.pathRequired}</label>
-            <input
-              value={path}
-              onChange={(e) => setPath(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm"
-              placeholder={t.pathPlaceholder}
-            />
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.pathRequired}</label>
+            <div className="flex gap-2">
+              <input value={path} onChange={(e) => setPath(e.target.value)} className={inputClass + " flex-1"} placeholder={t.pathPlaceholder} />
+              <button
+                type="button"
+                onClick={async () => { const p = await SelectDirectory(); if (p) setPath(p) }}
+                className="px-3 py-2 text-sm text-content-muted border-2 border-border rounded-input hover:border-primary hover:text-primary transition-all shrink-0"
+                title={t.browse}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+              </button>
+            </div>
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-1">{t.command}</label>
-            <input
-              value={command}
-              onChange={(e) => setCommand(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm"
-            />
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.command}</label>
+            <input value={command} onChange={(e) => setCommand(e.target.value)} className={inputClass} />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-1">{t.group}</label>
-            <select
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.group}</label>
+            <Select
               value={group}
-              onChange={(e) => setGroup(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm"
-            >
-              <option value="">{t.noGroup}</option>
-              {groups.map((g) => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </select>
+              onChange={setGroup}
+              options={[
+                { value: '', label: t.noGroup },
+                ...groups.map(g => ({ value: g, label: g })),
+              ]}
+            />
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-400 hover:text-white">
+            <button type="button" onClick={onClose} className="px-5 py-2 text-sm text-content-muted hover:text-content font-medium">
               {t.cancel}
             </button>
-            <button type="submit" className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded">
+            <button type="submit" className="px-5 py-2 text-sm text-white font-semibold rounded-pill bg-gradient-to-br from-primary to-[#E8917A] shadow-[0_4px_14px_rgba(224,122,95,0.3)] hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(224,122,95,0.4)] transition-all duration-300">
               {t.add}
             </button>
           </div>

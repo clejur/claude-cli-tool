@@ -196,8 +196,18 @@ func (a *App) RestoreWorkspace(name string) error {
 	return a.launcherSvc.Launch(projects)
 }
 
+func (a *App) UpdateWorkspace(name string, projectNames []string) (*model.Workspace, error) {
+	return a.workspaceSvc.Update(name, projectNames)
+}
+
 func (a *App) RemoveWorkspace(name string) error {
 	return a.workspaceSvc.Remove(name)
+}
+
+// Directory picker
+
+func (a *App) SelectDirectory() (string, error) {
+	return wailsRuntime.OpenDirectoryDialog(a.ctx, wailsRuntime.OpenDialogOptions{})
 }
 
 // Config import/export

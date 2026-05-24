@@ -2,6 +2,8 @@ package project
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -33,7 +35,10 @@ func (s *Service) Add(name, label, path, command, group string) (*model.Project,
 
 	for _, p := range cfg.Projects {
 		if p.Name == name {
-			return nil, fmt.Errorf("project with name %q already exists", name)
+			return nil, fmt.Errorf("ERR_NAME_EXISTS|%s", name)
+		}
+		if strings.EqualFold(filepath.Clean(p.Path), filepath.Clean(path)) {
+			return nil, fmt.Errorf("ERR_PATH_EXISTS|%s|%s", path, p.Name)
 		}
 	}
 

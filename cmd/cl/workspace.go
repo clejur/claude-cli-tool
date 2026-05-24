@@ -79,6 +79,23 @@ var workspaceRestoreCmd = &cobra.Command{
 	},
 }
 
+var workspaceUpdateCmd = &cobra.Command{
+	Use:   "update <name> [project-names...]",
+	Short: "Update projects in a workspace",
+	Args:  cobra.MinimumNArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		name := args[0]
+		projectNames := args[1:]
+
+		ws, err := workspaceSvc.Update(name, projectNames)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Updated workspace %q with %d projects\n", ws.Name, len(ws.ProjectIDs))
+		return nil
+	},
+}
+
 var workspaceRemoveCmd = &cobra.Command{
 	Use:   "remove <name>",
 	Short: "Remove a workspace",
@@ -97,6 +114,7 @@ func init() {
 	workspaceCmd.AddCommand(workspaceSaveCmd)
 	workspaceCmd.AddCommand(workspaceListCmd)
 	workspaceCmd.AddCommand(workspaceRestoreCmd)
+	workspaceCmd.AddCommand(workspaceUpdateCmd)
 	workspaceCmd.AddCommand(workspaceRemoveCmd)
 	rootCmd.AddCommand(workspaceCmd)
 }

@@ -8,15 +8,19 @@ export const locales = {
     noProjectsFound: 'No projects found. Click "+ Add Project" to get started.',
 
     // Sidebar
+    projects: 'Projects',
     groups: 'Groups',
     addGroup: '+ Add Group',
+    addGroupTitle: 'Add Group',
     groupNamePrompt: 'Group name:',
+    restore: 'Restore',
 
     // ProjectCard
     running: 'Running',
     stopped: 'Stopped',
     ungrouped: 'ungrouped',
     start: 'Start',
+    focus: 'Focus',
     edit: 'Edit',
     del: 'Del',
     stop: 'Stop',
@@ -30,10 +34,12 @@ export const locales = {
     labelPlaceholder: 'Same as name if empty',
     pathRequired: 'Path *',
     pathPlaceholder: 'D:\\projects\\my-api',
+    browse: 'Browse',
     command: 'Command',
     group: 'Group',
     noGroup: 'No group',
     cancel: 'Cancel',
+    confirm: 'Confirm',
     add: 'Add',
     namePathRequired: 'Name and path are required',
 
@@ -45,12 +51,17 @@ export const locales = {
     workspaces: 'Workspaces',
     saveWorkspace: '+ Save workspace',
     noWorkspaces: 'No workspaces saved.',
+    startAll: 'Start All',
+    startSelected: (n: number) => `Start (${n})`,
+    editWorkspace: 'Edit',
+    editWorkspaceTitle: 'Edit Workspace',
 
     // SaveWorkspaceDialog
     saveWorkspaceTitle: 'Save Workspace',
     workspaceName: 'Workspace Name',
     workspaceNamePlaceholder: 'e.g. daily-dev',
     selectProjects: 'Select running projects to include:',
+    selectProjectsForWorkspace: 'Select projects to include:',
     noRunningProjects: 'No projects are currently running.',
     workspaceNameRequired: 'Workspace name is required',
 
@@ -65,12 +76,19 @@ export const locales = {
     importCount: (n: number) => `Import (${n})`,
     removeConfirm: 'Remove this project?',
 
+    // Errors
+    errNameExists: (name: string) => `Project "${name}" already exists`,
+    errPathExists: (path: string, name: string) => `Path "${path}" is already used by project "${name}"`,
+
     // Settings
     settings: 'Settings',
+    backToProjects: 'Back to projects',
+    general: 'General',
     language: 'Language',
     langEn: 'English',
     langZh: '中文',
     autoStart: 'Start on boot',
+    dataManagement: 'Data',
     exportConfig: 'Export config',
     importConfig: 'Import config',
   },
@@ -81,14 +99,18 @@ export const locales = {
     searchPlaceholder: '搜索项目...',
     noProjectsFound: '暂无项目，点击"+ 添加项目"开始。',
 
+    projects: '项目',
     groups: '分组',
     addGroup: '+ 添加分组',
+    addGroupTitle: '添加分组',
     groupNamePrompt: '分组名称：',
+    restore: '恢复',
 
     running: '运行中',
     stopped: '已停止',
     ungrouped: '未分组',
     start: '启动',
+    focus: '聚焦',
     edit: '编辑',
     del: '删除',
     stop: '停止',
@@ -101,10 +123,12 @@ export const locales = {
     labelPlaceholder: '留空则与名称相同',
     pathRequired: '路径 *',
     pathPlaceholder: 'D:\\projects\\my-api',
+    browse: '浏览',
     command: '命令',
     group: '分组',
     noGroup: '无分组',
     cancel: '取消',
+    confirm: '确认',
     add: '添加',
     namePathRequired: '名称和路径为必填项',
 
@@ -114,11 +138,16 @@ export const locales = {
     workspaces: '工作区',
     saveWorkspace: '+ 保存工作区',
     noWorkspaces: '暂无已保存的工作区。',
+    startAll: '全部启动',
+    startSelected: (n: number) => `启动 (${n})`,
+    editWorkspace: '编辑',
+    editWorkspaceTitle: '编辑工作区',
 
     saveWorkspaceTitle: '保存工作区',
     workspaceName: '工作区名称',
     workspaceNamePlaceholder: '例如 daily-dev',
     selectProjects: '选择要包含的运行中项目：',
+    selectProjectsForWorkspace: '选择要包含的项目：',
     noRunningProjects: '当前没有正在运行的项目。',
     workspaceNameRequired: '工作区名称为必填项',
 
@@ -132,11 +161,17 @@ export const locales = {
     importCount: (n: number) => `导入 (${n})`,
     removeConfirm: '确定移除此项目？',
 
+    errNameExists: (name: string) => `项目名称"${name}"已存在`,
+    errPathExists: (path: string, name: string) => `路径"${path}"已被项目"${name}"使用`,
+
     settings: '设置',
+    backToProjects: '返回项目',
+    general: '通用',
     language: '语言',
     langEn: 'English',
     langZh: '中文',
     autoStart: '开机自启',
+    dataManagement: '数据',
     exportConfig: '导出配置',
     importConfig: '导入配置',
   },

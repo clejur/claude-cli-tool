@@ -87,9 +87,7 @@ var importCmd = &cobra.Command{
 		for _, idx := range selected {
 			proc := unregistered[idx]
 			name := filepath.Base(proc.Cwd)
-			if existingNames[strings.ToLower(name)] {
-				name = name + "-2"
-			}
+			name = dedupName(name, existingNames)
 			p, err := projectSvc.Add(name, name, proc.Cwd, "claude", "")
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "  Failed to import %s: %v\n", proc.Cwd, err)
@@ -100,6 +98,18 @@ var importCmd = &cobra.Command{
 		}
 		return nil
 	},
+}
+
+func dedupName(name string, existing map[string]bool) string {
+	if !existing[strings.ToLower(name)] {
+		return name
+	}
+	for i := 1; ; i++ {
+		candidate := fmt.Sprintf("%s(%d)", name, i)
+		if !existing[strings.ToLower(candidate)] {
+			return candidate
+		}
+	}
 }
 
 func init() {

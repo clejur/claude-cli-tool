@@ -39,3 +39,19 @@ export function useLang() {
   const { lang, setLang } = useContext(I18nContext)
   return { lang, setLang }
 }
+
+export function useTranslateError() {
+  const t = useT()
+  return (err: any): string => {
+    const msg = typeof err === 'string' ? err : err?.toString?.() || ''
+    if (msg.includes('ERR_NAME_EXISTS|')) {
+      const parts = msg.split('ERR_NAME_EXISTS|')
+      return t.errNameExists(parts[1])
+    }
+    if (msg.includes('ERR_PATH_EXISTS|')) {
+      const parts = msg.split('ERR_PATH_EXISTS|')[1].split('|')
+      return t.errPathExists(parts[0], parts[1])
+    }
+    return msg
+  }
+}

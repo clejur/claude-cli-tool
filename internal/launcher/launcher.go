@@ -18,6 +18,8 @@ func (l *Launcher) BuildArgs(projects []model.Project) []string {
 		return nil
 	}
 
+	shell := detectShell()
+
 	var args []string
 	for i, p := range projects {
 		if i > 0 {
@@ -25,9 +27,10 @@ func (l *Launcher) BuildArgs(projects []model.Project) []string {
 		}
 		args = append(args,
 			"new-tab",
-			"--title", p.Label,
+			"--title", "✳ "+p.Label,
+			"--suppressApplicationTitle",
 			"--startingDirectory", p.Path,
-			"powershell", "-NoExit", "-Command", p.Command,
+			shell, "-NoExit", "-Command", p.Command,
 		)
 	}
 	return args
@@ -49,4 +52,11 @@ func (l *Launcher) CheckWTAvailable() error {
 		return fmt.Errorf("Windows Terminal (wt) not found in PATH. Please install Windows Terminal")
 	}
 	return nil
+}
+
+func detectShell() string {
+	if _, err := exec.LookPath("pwsh"); err == nil {
+		return "pwsh"
+	}
+	return "powershell"
 }

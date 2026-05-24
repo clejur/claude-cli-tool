@@ -94,6 +94,45 @@ func (s *Service) Resolve(name string) ([]model.Project, error) {
 	return projects, nil
 }
 
+func (s *Service) Update(name string, projectNames []string) (*model.Workspace, error) {
+	cfg, err := s.store.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	var ws *model.Workspace
+	for i := range cfg.Workspaces {
+		if cfg.Workspaces[i].Name == name {
+			ws = &cfg.Workspaces[i]
+			break
+		}
+	}
+	if ws == nil {
+		return nil, fmt.Errorf("workspace %q not found", name)
+	}
+
+	var projectIDs []string
+	for _, pName := range projectNames {
+		found := false
+		for _, p := range cfg.Projects {
+			if p.Name == pName || p.ID == pName {
+				projectIDs = append(projectIDs, p.ID)
+				found = true
+				break
+			}
+		}
+		if !found {
+			return nil, fmt.Errorf("project %q not found", pName)
+		}
+	}
+
+	ws.ProjectIDs = projectIDs
+	if err := s.store.Save(cfg); err != nil {
+		return nil, err
+	}
+	return ws, nil
+}
+
 func (s *Service) Remove(name string) error {
 	cfg, err := s.store.Load()
 	if err != nil {
