@@ -1,14 +1,92 @@
+import { useState } from 'react'
+import { Sidebar } from './components/Sidebar'
+import { ProjectCard } from './components/ProjectCard'
+import { AddProjectDialog } from './components/AddProjectDialog'
+import { EditProjectDialog } from './components/EditProjectDialog'
+import { WorkspaceMenu } from './components/WorkspaceMenu'
+import { useGroups } from './hooks/useGroups'
+import { useProjects } from './hooks/useProjects'
+import { useWorkspaces } from './hooks/useWorkspaces'
+import { model } from '../wailsjs/go/models'
+
 function App() {
+  const [selectedGroup, setSelectedGroup] = useState('')
+  const [showAddDialog, setShowAddDialog] = useState(false)
+  const [editingProject, setEditingProject] = useState<model.Project | null>(null)
+  const { groups, add: addGroup } = useGroups()
+  const { projects, statuses, start, remove, add, edit } = useProjects(selectedGroup)
+  const { workspaces, save: saveWorkspace, restore: restoreWorkspace, remove: removeWorkspace } = useWorkspaces()
+
+  const handleRemove = async (id: string) => {
+    if (confirm('Remove this project?')) {
+      await remove(id)
+    }
+  }
+
   return (
     <div className="flex h-screen">
-      <aside className="w-48 bg-gray-800 p-4 border-r border-gray-700">
-        <h2 className="text-sm font-bold text-gray-400 uppercase mb-4">Groups</h2>
-        <p className="text-gray-500 text-sm">Loading...</p>
-      </aside>
-      <main className="flex-1 p-6">
-        <h1 className="text-2xl font-bold mb-4">Claude Launcher</h1>
-        <p className="text-gray-400">Projects will appear here.</p>
+      <Sidebar
+        groups={groups}
+        selectedGroup={selectedGroup}
+        onSelectGroup={setSelectedGroup}
+        onAddGroup={addGroup}
+      />
+      <main className="flex-1 p-6 overflow-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-bold">
+            {selectedGroup || 'All Projects'}
+            <span className="ml-2 text-sm font-normal text-gray-400">
+              ({projects.length})
+            </span>
+          </h1>
+          <div className="flex items-center gap-2">
+            <WorkspaceMenu
+              workspaces={workspaces}
+              onRestore={restoreWorkspace}
+              onSave={saveWorkspace}
+              onRemove={removeWorkspace}
+              projectNames={projects.map(p => p.name)}
+            />
+            <button
+              onClick={() => setShowAddDialog(true)}
+              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded"
+            >
+              + Add Project
+            </button>
+          </div>
+        </div>
+        {projects.length === 0 ? (
+          <p className="text-gray-500">No projects found. Click "+ Add Project" to get started.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.map((p) => (
+              <ProjectCard
+                key={p.id}
+                project={p}
+                status={statuses.get(p.id)}
+                onStart={start}
+                onEdit={setEditingProject}
+                onRemove={handleRemove}
+              />
+            ))}
+          </div>
+        )}
       </main>
+      {showAddDialog && (
+        <AddProjectDialog
+          groups={groups}
+          onAdd={add}
+          onClose={() => setShowAddDialog(false)}
+        />
+      )}
+      {editingProject && (
+        <EditProjectDialog
+          project={editingProject}
+          groups={groups}
+          onEdit={edit}
+          onClose={() => setEditingProject(null)}
+        />
+      )}
     </div>
   )
 }
