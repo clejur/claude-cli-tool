@@ -18,8 +18,13 @@ type Workspace struct {
 	ProjectIDs []string `json:"projectIds"`
 }
 
+type Settings struct {
+	CloseToTray bool `json:"closeToTray"`
+}
+
 type Config struct {
 	Projects   []Project   `json:"projects"`
 	Groups     []string    `json:"groups"`
 	Workspaces []Workspace `json:"workspaces"`
+	Settings   Settings    `json:"settings"`
 }

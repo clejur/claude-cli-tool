@@ -40,10 +40,11 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	a.registerHotkey()
+	a.setupTray()
 }
 
 func (a *App) Quit() {
-	os.Exit(0)
+	quitFromTray()
 }
 
 // Project bindings
@@ -202,6 +203,25 @@ func (a *App) UpdateWorkspace(name string, projectNames []string) (*model.Worksp
 
 func (a *App) RemoveWorkspace(name string) error {
 	return a.workspaceSvc.Remove(name)
+}
+
+// Settings bindings
+
+func (a *App) GetCloseToTray() (bool, error) {
+	cfg, err := a.store.Load()
+	if err != nil {
+		return true, err
+	}
+	return cfg.Settings.CloseToTray, nil
+}
+
+func (a *App) SetCloseToTray(v bool) error {
+	cfg, err := a.store.Load()
+	if err != nil {
+		return err
+	}
+	cfg.Settings.CloseToTray = v
+	return a.store.Save(cfg)
 }
 
 // Directory picker

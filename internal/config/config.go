@@ -30,6 +30,7 @@ func (s *Store) Load() (*model.Config, error) {
 				Projects:   []model.Project{},
 				Groups:     []string{},
 				Workspaces: []model.Workspace{},
+				Settings:   model.Settings{CloseToTray: true},
 			}, nil
 		}
 		return nil, err
