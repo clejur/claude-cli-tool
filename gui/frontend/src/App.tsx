@@ -8,9 +8,12 @@ import { WorkspaceMenu } from './components/WorkspaceMenu'
 import { useGroups } from './hooks/useGroups'
 import { useProjects } from './hooks/useProjects'
 import { useWorkspaces } from './hooks/useWorkspaces'
+import { useT, useLang } from './i18n/context'
 import { model } from '../wailsjs/go/models'
 
 function App() {
+  const t = useT()
+  const { lang, setLang } = useLang()
   const [selectedGroup, setSelectedGroup] = useState('')
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showImportDialog, setShowImportDialog] = useState(false)
@@ -20,7 +23,7 @@ function App() {
   const { workspaces, save: saveWorkspace, restore: restoreWorkspace, remove: removeWorkspace } = useWorkspaces()
 
   const handleRemove = async (id: string) => {
-    if (confirm('Remove this project?')) {
+    if (confirm(t.removeConfirm)) {
       await remove(id)
     }
   }
@@ -36,12 +39,18 @@ function App() {
       <main className="flex-1 p-6 overflow-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold">
-            {selectedGroup || 'All Projects'}
+            {selectedGroup || t.allProjects}
             <span className="ml-2 text-sm font-normal text-gray-400">
               ({projects.length})
             </span>
           </h1>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+              className="px-3 py-2 text-xs bg-gray-700 hover:bg-gray-600 rounded border border-gray-600"
+            >
+              {lang === 'en' ? '中文' : 'EN'}
+            </button>
             <WorkspaceMenu
               workspaces={workspaces}
               onRestore={restoreWorkspace}
@@ -53,18 +62,18 @@ function App() {
               onClick={() => setShowImportDialog(true)}
               className="px-4 py-2 text-sm bg-green-700 hover:bg-green-600 rounded"
             >
-              Import
+              {t.import}
             </button>
             <button
               onClick={() => setShowAddDialog(true)}
               className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded"
             >
-              + Add Project
+              {t.addProject}
             </button>
           </div>
         </div>
         {projects.length === 0 ? (
-          <p className="text-gray-500">No projects found. Click "+ Add Project" to get started.</p>
+          <p className="text-gray-500">{t.noProjectsFound}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projects.map((p) => (

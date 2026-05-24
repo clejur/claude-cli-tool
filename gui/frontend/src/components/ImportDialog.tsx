@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { DetectUnregistered, AddProject } from '../../wailsjs/go/main/App'
+import { useT } from '../i18n/context'
 
 interface DetectedProcess {
   pid: number
@@ -12,6 +13,7 @@ interface ImportDialogProps {
 }
 
 export function ImportDialog({ onImported, onClose }: ImportDialogProps) {
+  const t = useT()
   const [processes, setProcesses] = useState<DetectedProcess[]>([])
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [loading, setLoading] = useState(true)
@@ -76,18 +78,18 @@ export function ImportDialog({ onImported, onClose }: ImportDialogProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-gray-800 rounded-lg p-6 w-[520px] border border-gray-600">
-        <h2 className="text-lg font-bold mb-4">Import Running Processes</h2>
+        <h2 className="text-lg font-bold mb-4">{t.importTitle}</h2>
         {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
         {loading ? (
-          <p className="text-gray-400 text-sm">Scanning processes...</p>
+          <p className="text-gray-400 text-sm">{t.scanning}</p>
         ) : processes.length === 0 ? (
-          <p className="text-gray-500 text-sm">No unregistered Claude processes detected.</p>
+          <p className="text-gray-500 text-sm">{t.noUnregistered}</p>
         ) : (
           <>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-400">{processes.length} process(es) found</span>
+              <span className="text-sm text-gray-400">{t.processesFound(processes.length)}</span>
               <button onClick={toggleAll} className="text-xs text-blue-400 hover:text-blue-300">
-                {selected.size === processes.length ? 'Deselect all' : 'Select all'}
+                {selected.size === processes.length ? t.deselectAll : t.selectAll}
               </button>
             </div>
             <div className="space-y-1 max-h-64 overflow-auto">
@@ -113,7 +115,7 @@ export function ImportDialog({ onImported, onClose }: ImportDialogProps) {
         )}
         <div className="flex justify-end gap-2 pt-4">
           <button onClick={onClose} className="px-4 py-2 text-sm text-gray-400 hover:text-white">
-            Cancel
+            {t.cancel}
           </button>
           {processes.length > 0 && (
             <button
@@ -121,7 +123,7 @@ export function ImportDialog({ onImported, onClose }: ImportDialogProps) {
               disabled={selected.size === 0 || importing}
               className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {importing ? 'Importing...' : `Import (${selected.size})`}
+              {importing ? t.importing : t.importCount(selected.size)}
             </button>
           )}
         </div>

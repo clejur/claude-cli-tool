@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { model } from '../../wailsjs/go/models'
+import { useT } from '../i18n/context'
 
 interface WorkspaceMenuProps {
   workspaces: model.Workspace[]
@@ -10,10 +11,11 @@ interface WorkspaceMenuProps {
 }
 
 export function WorkspaceMenu({ workspaces, onRestore, onSave, onRemove, projectNames }: WorkspaceMenuProps) {
+  const t = useT()
   const [open, setOpen] = useState(false)
 
   const handleSave = () => {
-    const name = prompt('Workspace name:')
+    const name = prompt(t.workspaceNamePrompt)
     if (!name) return
     onSave(name, projectNames)
     setOpen(false)
@@ -25,7 +27,7 @@ export function WorkspaceMenu({ workspaces, onRestore, onSave, onRemove, project
         onClick={() => setOpen(!open)}
         className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded border border-gray-600"
       >
-        Workspaces
+        {t.workspaces}
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-1 w-64 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50">
@@ -34,11 +36,11 @@ export function WorkspaceMenu({ workspaces, onRestore, onSave, onRemove, project
               onClick={handleSave}
               className="w-full text-left px-3 py-2 text-sm text-blue-400 hover:bg-gray-700 rounded"
             >
-              + Save current as workspace
+              {t.saveWorkspace}
             </button>
           </div>
           {workspaces.length === 0 ? (
-            <p className="px-3 py-2 text-sm text-gray-500">No workspaces saved.</p>
+            <p className="px-3 py-2 text-sm text-gray-500">{t.noWorkspaces}</p>
           ) : (
             <div className="p-2 space-y-1">
               {workspaces.map((ws) => (
@@ -54,7 +56,7 @@ export function WorkspaceMenu({ workspaces, onRestore, onSave, onRemove, project
                     onClick={() => onRemove(ws.name)}
                     className="text-xs text-red-400 hover:text-red-300 ml-2"
                   >
-                    Del
+                    {t.del}
                   </button>
                 </div>
               ))}
