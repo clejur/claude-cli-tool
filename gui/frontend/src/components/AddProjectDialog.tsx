@@ -11,18 +11,19 @@ const commandPresets = [
 
 interface AddProjectDialogProps {
   groups: string[]
+  defaultGroup?: string
   onAdd: (name: string, label: string, path: string, command: string, group: string) => Promise<void>
   onClose: () => void
 }
 
-export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogProps) {
+export function AddProjectDialog({ groups, defaultGroup = '', onAdd, onClose }: AddProjectDialogProps) {
   const t = useT()
   const translateError = useTranslateError()
   const [name, setName] = useState('')
   const [label, setLabel] = useState('')
   const [path, setPath] = useState('')
   const [command, setCommand] = useState('claude --continue')
-  const [group, setGroup] = useState('')
+  const [group, setGroup] = useState(defaultGroup)
   const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,20 +60,19 @@ export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogPro
             />
           </div>
           <div>
-            <label className="block text-sm text-content-muted font-medium mb-1">{t.nameRequired}</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder={t.namePlaceholder} />
-          </div>
-          <div>
-            <label className="block text-sm text-content-muted font-medium mb-1">{t.tabLabel}</label>
-            <input value={label} onChange={(e) => setLabel(e.target.value)} className={inputClass} placeholder={t.labelPlaceholder} />
-          </div>
-          <div>
             <label className="block text-sm text-content-muted font-medium mb-1">{t.pathRequired}</label>
             <div className="flex gap-2">
               <input value={path} onChange={(e) => setPath(e.target.value)} className={inputClass + " flex-1"} placeholder={t.pathPlaceholder} />
               <button
                 type="button"
-                onClick={async () => { const p = await SelectDirectory(); if (p) setPath(p) }}
+                onClick={async () => {
+                  const p = await SelectDirectory()
+                  if (p) {
+                    setPath(p)
+                    const folderName = p.replace(/[\\/]+$/, '').split(/[\\/]/).pop() || ''
+                    if (!name) setName(folderName)
+                  }
+                }}
                 className="px-3 py-2 text-sm text-content-muted border-2 border-border rounded-input hover:border-primary hover:text-primary transition-all shrink-0"
                 title={t.browse}
               >
@@ -81,6 +81,14 @@ export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogPro
                 </svg>
               </button>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.nameRequired}</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder={t.namePlaceholder} />
+          </div>
+          <div>
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.tabLabel}</label>
+            <input value={label} onChange={(e) => setLabel(e.target.value)} className={inputClass} placeholder={t.labelPlaceholder} />
           </div>
           <div>
             <label className="block text-sm text-content-muted font-medium mb-1">{t.command}</label>
@@ -112,7 +120,7 @@ export function AddProjectDialog({ groups, onAdd, onClose }: AddProjectDialogPro
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="px-5 py-2 text-sm text-content-muted hover:text-content font-medium">
+            <button type="button" onClick={onClose} className="px-5 py-2 text-sm font-semibold text-content-muted border-2 border-border rounded-pill hover:border-primary hover:text-primary transition-all duration-200">
               {t.cancel}
             </button>
             <button type="submit" className="px-5 py-2 text-sm text-white font-semibold rounded-pill bg-gradient-to-br from-primary to-[#E8917A] shadow-[0_4px_14px_rgba(224,122,95,0.3)] hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(224,122,95,0.4)] transition-all duration-300">

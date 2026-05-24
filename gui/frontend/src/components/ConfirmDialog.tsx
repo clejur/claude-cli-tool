@@ -16,7 +16,7 @@ export function ConfirmDialog({ message, onConfirm, onCancel }: ConfirmDialogPro
         <div className="flex justify-end gap-2">
           <button
             onClick={onCancel}
-            className="px-5 py-2 text-sm text-content-muted hover:text-content font-medium"
+            className="px-5 py-2 text-sm font-semibold text-content-muted border-2 border-border rounded-pill hover:border-primary hover:text-primary transition-all duration-200"
           >
             {t.cancel}
           </button>

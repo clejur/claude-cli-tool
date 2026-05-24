@@ -196,6 +196,7 @@ function App() {
       {showAddDialog && (
         <AddProjectDialog
           groups={groups}
+          defaultGroup={selectedGroup}
           onAdd={add}
           onClose={() => setShowAddDialog(false)}
         />

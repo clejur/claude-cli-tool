@@ -111,7 +111,7 @@ export function EditProjectDialog({ project, groups, onEdit, onClose }: EditProj
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="px-5 py-2 text-sm text-content-muted hover:text-content font-medium">
+            <button type="button" onClick={onClose} className="px-5 py-2 text-sm font-semibold text-content-muted border-2 border-border rounded-pill hover:border-primary hover:text-primary transition-all duration-200">
               {t.cancel}
             </button>
             <button type="submit" className="px-5 py-2 text-sm text-white font-semibold rounded-pill bg-gradient-to-br from-primary to-[#E8917A] shadow-[0_4px_14px_rgba(224,122,95,0.3)] hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(224,122,95,0.4)] transition-all duration-300">

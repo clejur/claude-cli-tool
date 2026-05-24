@@ -71,7 +71,7 @@ export function EditWorkspaceDialog({ workspace, onSaved, onClose }: EditWorkspa
           <>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-content-muted">{t.selectProjectsForWorkspace}</span>
-              <button onClick={toggleAll} className="text-xs text-primary hover:text-primary/80 font-medium">
+              <button onClick={toggleAll} className="px-3 py-1.5 text-xs font-semibold text-content-muted border border-border rounded-full hover:border-primary hover:text-primary transition-all">
                 {selected.size === allProjects.length ? t.deselectAll : t.selectAll}
               </button>
             </div>
@@ -97,7 +97,7 @@ export function EditWorkspaceDialog({ workspace, onSaved, onClose }: EditWorkspa
           </>
         )}
         <div className="flex justify-end gap-2 pt-4">
-          <button onClick={onClose} className="px-5 py-2 text-sm text-content-muted hover:text-content font-medium">
+          <button onClick={onClose} className="px-5 py-2 text-sm font-semibold text-content-muted border-2 border-border rounded-pill hover:border-primary hover:text-primary transition-all duration-200">
             {t.cancel}
           </button>
           <button

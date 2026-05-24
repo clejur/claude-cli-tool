@@ -177,7 +177,7 @@ export function Sidebar({
                 <button
                   type="button"
                   onClick={() => { setShowGroupDialog(false); setGroupName('') }}
-                  className="px-5 py-2 text-sm text-content-muted hover:text-content font-medium"
+                  className="px-5 py-2 text-sm font-semibold text-content-muted border-2 border-border rounded-pill hover:border-primary hover:text-primary transition-all duration-200"
                 >
                   {t.cancel}
                 </button>

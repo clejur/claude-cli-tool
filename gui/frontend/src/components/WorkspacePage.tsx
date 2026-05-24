@@ -117,7 +117,7 @@ export function WorkspacePage({ workspace, onBack, onUpdated }: WorkspacePagePro
             </button>
             <button
               onClick={toggleAll}
-              className="px-4 py-2 text-xs text-content-muted hover:text-primary font-medium transition-colors"
+              className="px-4 py-2 text-sm text-content-muted border-2 border-border rounded-pill hover:border-primary hover:text-primary font-medium transition-all duration-200"
             >
               {selected.size === projects.length ? t.deselectAll : t.selectAll}
             </button>
