@@ -70,6 +70,9 @@ export const locales = {
     language: 'Language',
     langEn: 'English',
     langZh: '中文',
+    autoStart: 'Start on boot',
+    exportConfig: 'Export config',
+    importConfig: 'Import config',
   },
   zh: {
     allProjects: '所有项目',
@@ -133,6 +136,9 @@ export const locales = {
     language: '语言',
     langEn: 'English',
     langZh: '中文',
+    autoStart: '开机自启',
+    exportConfig: '导出配置',
+    importConfig: '导入配置',
   },
 }
 

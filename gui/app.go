@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	"github.com/clejur/claude-launcher/internal/project"
 	"github.com/clejur/claude-launcher/internal/status"
 	"github.com/clejur/claude-launcher/internal/workspace"
+	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type App struct {
@@ -196,4 +198,47 @@ func (a *App) RestoreWorkspace(name string) error {
 
 func (a *App) RemoveWorkspace(name string) error {
 	return a.workspaceSvc.Remove(name)
+}
+
+// Config import/export
+
+func (a *App) ExportConfig() (string, error) {
+	path, err := wailsRuntime.SaveFileDialog(a.ctx, wailsRuntime.SaveDialogOptions{
+		DefaultFilename: "claude-launcher-config.json",
+		Filters: []wailsRuntime.FileFilter{
+			{DisplayName: "JSON Files", Pattern: "*.json"},
+		},
+	})
+	if err != nil || path == "" {
+		return "", err
+	}
+	cfg, err := a.store.Load()
+	if err != nil {
+		return "", err
+	}
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return path, os.WriteFile(path, data, 0644)
+}
+
+func (a *App) ImportConfig() error {
+	path, err := wailsRuntime.OpenFileDialog(a.ctx, wailsRuntime.OpenDialogOptions{
+		Filters: []wailsRuntime.FileFilter{
+			{DisplayName: "JSON Files", Pattern: "*.json"},
+		},
+	})
+	if err != nil || path == "" {
+		return err
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	var cfg model.Config
+	if err := json.Unmarshal(data, &cfg); err != nil {
+		return err
+	}
+	return a.store.Save(&cfg)
 }

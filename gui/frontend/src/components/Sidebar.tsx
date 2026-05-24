@@ -1,5 +1,59 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useT, useLang } from '../i18n/context'
+import { GetAutoStart, SetAutoStart, ExportConfig, ImportConfig } from '../../wailsjs/go/main/App'
+
+function SettingsPanel({ lang, setLang }: { lang: string; setLang: (l: 'en' | 'zh') => void }) {
+  const t = useT()
+  const [autoStart, setAutoStartState] = useState(false)
+
+  useEffect(() => {
+    GetAutoStart().then(v => setAutoStartState(v))
+  }, [])
+
+  const handleAutoStart = async (checked: boolean) => {
+    await SetAutoStart(checked)
+    setAutoStartState(checked)
+  }
+
+  return (
+    <div className="mt-2 px-3 space-y-3">
+      <div>
+        <label className="block text-xs text-gray-500 mb-1">{t.language}</label>
+        <select
+          value={lang}
+          onChange={(e) => setLang(e.target.value as 'en' | 'zh')}
+          className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200"
+        >
+          <option value="en">{t.langEn}</option>
+          <option value="zh">{t.langZh}</option>
+        </select>
+      </div>
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={autoStart}
+          onChange={(e) => handleAutoStart(e.target.checked)}
+          className="rounded"
+        />
+        <span className="text-sm text-gray-300">{t.autoStart}</span>
+      </label>
+      <div className="flex gap-2">
+        <button
+          onClick={() => ExportConfig()}
+          className="flex-1 px-2 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded text-gray-300"
+        >
+          {t.exportConfig}
+        </button>
+        <button
+          onClick={() => ImportConfig()}
+          className="flex-1 px-2 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded text-gray-300"
+        >
+          {t.importConfig}
+        </button>
+      </div>
+    </div>
+  )
+}
 
 interface SidebarProps {
   groups: string[]
@@ -64,17 +118,7 @@ export function Sidebar({ groups, selectedGroup, onSelectGroup, onAddGroup }: Si
             ⚙ {t.settings}
           </button>
           {showSettings && (
-            <div className="mt-2 px-3 space-y-2">
-              <label className="block text-xs text-gray-500">{t.language}</label>
-              <select
-                value={lang}
-                onChange={(e) => setLang(e.target.value as 'en' | 'zh')}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200"
-              >
-                <option value="en">{t.langEn}</option>
-                <option value="zh">{t.langZh}</option>
-              </select>
-            </div>
+            <SettingsPanel lang={lang} setLang={setLang} />
           )}
         </div>
       </aside>
