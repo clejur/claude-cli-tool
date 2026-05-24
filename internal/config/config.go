@@ -19,7 +19,7 @@ func NewStore(path string) *Store {
 
 func DefaultPath() string {
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".claude-launcher", "config.json")
+	return filepath.Join(home, ".claude-cli-launcher", "config.json")
 }
 
 func (s *Store) Load() (*model.Config, error) {
