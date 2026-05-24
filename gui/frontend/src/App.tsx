@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Sidebar } from './components/Sidebar'
+import { SearchBar } from './components/SearchBar'
 import { ProjectCard } from './components/ProjectCard'
 import { AddProjectDialog } from './components/AddProjectDialog'
 import { EditProjectDialog } from './components/EditProjectDialog'
@@ -15,6 +16,7 @@ import { model } from '../wailsjs/go/models'
 function App() {
   const t = useT()
   const [selectedGroup, setSelectedGroup] = useState('')
+  const [search, setSearch] = useState('')
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showImportDialog, setShowImportDialog] = useState(false)
   const [showSaveWorkspaceDialog, setShowSaveWorkspaceDialog] = useState(false)
@@ -22,6 +24,13 @@ function App() {
   const { groups, add: addGroup } = useGroups()
   const { projects, statuses, start, remove, add, edit, refresh } = useProjects(selectedGroup)
   const { workspaces, save: saveWorkspace, restore: restoreWorkspace, remove: removeWorkspace } = useWorkspaces()
+
+  const filteredProjects = projects.filter(p =>
+    !search ||
+    p.name.toLowerCase().includes(search.toLowerCase()) ||
+    p.label.toLowerCase().includes(search.toLowerCase()) ||
+    p.path.toLowerCase().includes(search.toLowerCase())
+  )
 
   const handleRemove = async (id: string) => {
     if (confirm(t.removeConfirm)) {
@@ -42,10 +51,11 @@ function App() {
           <h1 className="text-xl font-bold">
             {selectedGroup || t.allProjects}
             <span className="ml-2 text-sm font-normal text-gray-400">
-              ({projects.length})
+              ({filteredProjects.length})
             </span>
           </h1>
           <div className="flex items-center gap-2">
+            <SearchBar value={search} onChange={setSearch} />
             <WorkspaceMenu
               workspaces={workspaces}
               onRestore={restoreWorkspace}
@@ -66,11 +76,11 @@ function App() {
             </button>
           </div>
         </div>
-        {projects.length === 0 ? (
+        {filteredProjects.length === 0 ? (
           <p className="text-gray-500">{t.noProjectsFound}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map((p) => (
+            {filteredProjects.map((p) => (
               <ProjectCard
                 key={p.id}
                 project={p}

@@ -4,6 +4,7 @@ export const locales = {
     allProjects: 'All Projects',
     addProject: '+ Add Project',
     import: 'Import',
+    searchPlaceholder: 'Search projects...',
     noProjectsFound: 'No projects found. Click "+ Add Project" to get started.',
 
     // Sidebar
@@ -72,6 +73,7 @@ export const locales = {
     allProjects: '所有项目',
     addProject: '+ 添加项目',
     import: '导入',
+    searchPlaceholder: '搜索项目...',
     noProjectsFound: '暂无项目，点击"+ 添加项目"开始。',
 
     groups: '分组',
