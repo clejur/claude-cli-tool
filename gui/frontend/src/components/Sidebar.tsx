@@ -1,4 +1,5 @@
-import { useT } from '../i18n/context'
+import { useState } from 'react'
+import { useT, useLang } from '../i18n/context'
 
 interface SidebarProps {
   groups: string[]
@@ -9,6 +10,8 @@ interface SidebarProps {
 
 export function Sidebar({ groups, selectedGroup, onSelectGroup, onAddGroup }: SidebarProps) {
   const t = useT()
+  const { lang, setLang } = useLang()
+  const [showSettings, setShowSettings] = useState(false)
 
   const handleAddGroup = () => {
     const name = prompt(t.groupNamePrompt)
@@ -45,6 +48,27 @@ export function Sidebar({ groups, selectedGroup, onSelectGroup, onAddGroup }: Si
       >
         {t.addGroup}
       </button>
+      <div className="mt-4 pt-4 border-t border-gray-700">
+        <button
+          onClick={() => setShowSettings(!showSettings)}
+          className="w-full text-left px-3 py-2 rounded text-sm text-gray-400 hover:bg-gray-700 hover:text-gray-200"
+        >
+          ⚙ {t.settings}
+        </button>
+        {showSettings && (
+          <div className="mt-2 px-3 space-y-2">
+            <label className="block text-xs text-gray-500">{t.language}</label>
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value as 'en' | 'zh')}
+              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200"
+            >
+              <option value="en">{t.langEn}</option>
+              <option value="zh">{t.langZh}</option>
+            </select>
+          </div>
+        )}
+      </div>
     </aside>
   )
 }

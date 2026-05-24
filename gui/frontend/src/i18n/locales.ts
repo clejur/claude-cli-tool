@@ -54,6 +54,12 @@ export const locales = {
     importing: 'Importing...',
     importCount: (n: number) => `Import (${n})`,
     removeConfirm: 'Remove this project?',
+
+    // Settings
+    settings: 'Settings',
+    language: 'Language',
+    langEn: 'English',
+    langZh: '中文',
   },
   zh: {
     allProjects: '所有项目',
@@ -103,6 +109,11 @@ export const locales = {
     importing: '导入中...',
     importCount: (n: number) => `导入 (${n})`,
     removeConfirm: '确定移除此项目？',
+
+    settings: '设置',
+    language: '语言',
+    langEn: 'English',
+    langZh: '中文',
   },
 }
 

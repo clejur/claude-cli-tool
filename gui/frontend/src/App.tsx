@@ -8,12 +8,11 @@ import { WorkspaceMenu } from './components/WorkspaceMenu'
 import { useGroups } from './hooks/useGroups'
 import { useProjects } from './hooks/useProjects'
 import { useWorkspaces } from './hooks/useWorkspaces'
-import { useT, useLang } from './i18n/context'
+import { useT } from './i18n/context'
 import { model } from '../wailsjs/go/models'
 
 function App() {
   const t = useT()
-  const { lang, setLang } = useLang()
   const [selectedGroup, setSelectedGroup] = useState('')
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showImportDialog, setShowImportDialog] = useState(false)
@@ -45,12 +44,6 @@ function App() {
             </span>
           </h1>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
-              className="px-3 py-2 text-xs bg-gray-700 hover:bg-gray-600 rounded border border-gray-600"
-            >
-              {lang === 'en' ? '中文' : 'EN'}
-            </button>
             <WorkspaceMenu
               workspaces={workspaces}
               onRestore={restoreWorkspace}
