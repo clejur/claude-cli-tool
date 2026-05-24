@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Sidebar } from './components/Sidebar'
 import { SearchBar } from './components/SearchBar'
 import { ProjectCard } from './components/ProjectCard'
+import { ContextMenu, type ContextMenuItem } from './components/ContextMenu'
 import { AddProjectDialog } from './components/AddProjectDialog'
 import { EditProjectDialog } from './components/EditProjectDialog'
 import { ImportDialog } from './components/ImportDialog'
@@ -11,6 +12,7 @@ import { useGroups } from './hooks/useGroups'
 import { useProjects } from './hooks/useProjects'
 import { useWorkspaces } from './hooks/useWorkspaces'
 import { useT } from './i18n/context'
+import { StopProject } from '../wailsjs/go/main/App'
 import { model } from '../wailsjs/go/models'
 
 function App() {
@@ -21,6 +23,7 @@ function App() {
   const [showImportDialog, setShowImportDialog] = useState(false)
   const [showSaveWorkspaceDialog, setShowSaveWorkspaceDialog] = useState(false)
   const [editingProject, setEditingProject] = useState<model.Project | null>(null)
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; project: model.Project } | null>(null)
   const { groups, add: addGroup } = useGroups()
   const { projects, statuses, start, remove, add, edit, refresh } = useProjects(selectedGroup)
   const { workspaces, save: saveWorkspace, restore: restoreWorkspace, remove: removeWorkspace } = useWorkspaces()
@@ -36,6 +39,58 @@ function App() {
     if (confirm(t.removeConfirm)) {
       await remove(id)
     }
+  }
+
+  const handleContextMenu = useCallback((e: React.MouseEvent, project: model.Project) => {
+    setContextMenu({ x: e.clientX, y: e.clientY, project })
+  }, [])
+
+  const closeContextMenu = useCallback(() => setContextMenu(null), [])
+
+  const buildContextMenuItems = (): ContextMenuItem[] => {
+    if (!contextMenu) return []
+    const p = contextMenu.project
+    const status = statuses.get(p.id)
+    const items: ContextMenuItem[] = []
+
+    if (status?.running) {
+      items.push({
+        label: t.stop,
+        onClick: async () => { await StopProject(status.pid); closeContextMenu() },
+      })
+    } else {
+      items.push({
+        label: t.start,
+        onClick: () => { start(p.id); closeContextMenu() },
+      })
+    }
+
+    items.push({
+      label: t.edit,
+      onClick: () => { setEditingProject(p); closeContextMenu() },
+    })
+
+    if (groups.length > 0) {
+      items.push({
+        label: t.moveToGroup,
+        onClick: () => {},
+        children: [
+          { label: t.noGroup, onClick: async () => { await edit(p.id, undefined, undefined, undefined, ''); closeContextMenu() } },
+          ...groups.map(g => ({
+            label: g,
+            onClick: async () => { await edit(p.id, undefined, undefined, undefined, g); closeContextMenu() },
+          })),
+        ],
+      })
+    }
+
+    items.push({
+      label: t.del,
+      danger: true,
+      onClick: () => { handleRemove(p.id); closeContextMenu() },
+    })
+
+    return items
   }
 
   return (
@@ -88,11 +143,20 @@ function App() {
                 onStart={start}
                 onEdit={setEditingProject}
                 onRemove={handleRemove}
+                onContextMenu={handleContextMenu}
               />
             ))}
           </div>
         )}
       </main>
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={buildContextMenuItems()}
+          onClose={closeContextMenu}
+        />
+      )}
       {showAddDialog && (
         <AddProjectDialog
           groups={groups}

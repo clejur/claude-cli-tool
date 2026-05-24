@@ -87,6 +87,14 @@ func (a *App) StartProjects(names []string) error {
 	return a.launcherSvc.Launch(projects)
 }
 
+func (a *App) StopProject(pid int32) error {
+	proc, err := os.FindProcess(int(pid))
+	if err != nil {
+		return err
+	}
+	return proc.Kill()
+}
+
 // Status bindings
 
 type ProjectStatusResult struct {

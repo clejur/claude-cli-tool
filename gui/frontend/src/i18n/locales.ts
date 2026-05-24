@@ -19,6 +19,8 @@ export const locales = {
     start: 'Start',
     edit: 'Edit',
     del: 'Del',
+    stop: 'Stop',
+    moveToGroup: 'Move to group',
 
     // AddProjectDialog
     addProjectTitle: 'Add Project',
@@ -86,6 +88,8 @@ export const locales = {
     start: '启动',
     edit: '编辑',
     del: '删除',
+    stop: '停止',
+    moveToGroup: '移动到分组',
 
     addProjectTitle: '添加项目',
     nameRequired: '名称 *',

@@ -8,13 +8,17 @@ interface ProjectCardProps {
   onStart: (id: string) => void
   onEdit: (project: model.Project) => void
   onRemove: (id: string) => void
+  onContextMenu: (e: React.MouseEvent, project: model.Project) => void
 }
 
-export function ProjectCard({ project, status, onStart, onEdit, onRemove }: ProjectCardProps) {
+export function ProjectCard({ project, status, onStart, onEdit, onRemove, onContextMenu }: ProjectCardProps) {
   const t = useT()
 
   return (
-    <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-500 transition-colors group">
+    <div
+      className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-500 transition-colors group"
+      onContextMenu={(e) => { e.preventDefault(); onContextMenu(e, project) }}
+    >
       <div className="flex items-center justify-between mb-2">
         <span className="font-medium text-white truncate">{project.label}</span>
         <div className="flex items-center gap-2">
