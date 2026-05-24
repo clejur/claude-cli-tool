@@ -1,31 +1,34 @@
-# Claude Launcher
+# Claude CLI Launcher
 
-Claude Launcher (`cl`) is a Windows tool for managing and quickly launching Claude Code terminal sessions. It saves project configurations (directory path, tab label, launch command) and restores them with a single command — no more re-navigating after a reboot.
+Claude CLI Launcher (`ccl`) is a Windows tool for managing and quickly launching Claude Code terminal sessions. It saves project configurations (directory path, tab label, launch command) and restores them with a single command — no more re-navigating after a reboot.
 
 Available as both a CLI tool and a GUI desktop app.
 
 ## Features
 
 - **Project Management** — Save, edit, and organize Claude Code project configurations
-- **One-click Launch** — Start projects as Windows Terminal tabs with `✳` icon prefix, auto-detects PowerShell 7 (pwsh)
+- **One-click Launch** — Start projects as Windows Terminal tabs with `claude --name` for session naming, auto-detects PowerShell 7 (pwsh)
 - **Focus Running Projects** — Bring the correct terminal window to foreground and switch to the exact tab (supports multiple windows)
 - **Groups** — Organize projects into named groups for batch operations
 - **Workspaces** — Save snapshots of running projects and restore them together
 - **Process Detection** — Detect running Claude processes and import them (auto-named by folder)
 - **Duplicate Prevention** — Rejects adding projects with duplicate names or paths
 - **Status Monitoring** — See which projects are currently running (with PID)
-- **GUI Desktop App** — Full-featured Wails + React interface
+- **GUI Desktop App** — Full-featured Wails + React interface with system tray
+- **Single Instance** — Only one GUI instance can run; re-launching activates the existing window
 - **i18n** — Chinese/English language toggle (errors included)
 - **Global Hotkey** — `Ctrl+Shift+C` to show the GUI window from anywhere
 - **Auto-start** — Optional launch on Windows boot
-- **Config Portability** — Export/import configuration as JSON
+- **Minimize to Tray** — Optional close-to-tray behavior with right-click menu (Show/Quit)
+- **Config Portability** — Export/import configuration as JSON (auto-refreshes UI after import)
+- **Command Presets** — Quick-toggle `--continue`, `--resume`, `--fork-session` flags in project dialogs
 
 ## Installation
 
 ### CLI
 
 ```bash
-go install github.com/clejur/claude-launcher/cmd/cl@latest
+go install github.com/clejur/claude-launcher/cmd/ccl@latest
 ```
 
 ### GUI
@@ -37,7 +40,7 @@ cd gui
 wails build
 ```
 
-The binary will be at `gui/build/bin/claude-launcher.exe`.
+The binary will be at `gui/build/bin/claude-cli-launcher.exe`.
 
 ## CLI Usage
 
@@ -45,31 +48,31 @@ The binary will be at `gui/build/bin/claude-launcher.exe`.
 
 ```bash
 # Interactive mode
-cl add
+ccl add
 
 # With flags
-cl add -n my-api -p "D:\projects\my-api" -l "API Server" -c claude -g backend
+ccl add -n my-api -p "D:\projects\my-api" -l "API Server" -c "claude --continue" -g backend
 ```
 
 ### List projects
 
 ```bash
-cl list              # All projects
-cl list -g backend   # Filter by group
+ccl list              # All projects
+ccl list -g backend   # Filter by group
 ```
 
 ### Start projects
 
 ```bash
-cl start my-api          # Start one project
-cl start --group backend # Start all in a group
-cl start --all           # Start everything
+ccl start my-api          # Start one project
+ccl start --group backend # Start all in a group
+ccl start --all           # Start everything
 ```
 
 ### Check status
 
 ```bash
-cl status
+ccl status
 ```
 
 Shows which projects are running and their PIDs.
@@ -77,37 +80,37 @@ Shows which projects are running and their PIDs.
 ### Edit a project
 
 ```bash
-cl edit my-api --label "New Label" --path "D:\new\path" --group frontend
+ccl edit my-api --label "New Label" --path "D:\new\path" --group frontend
 ```
 
 ### Remove a project
 
 ```bash
-cl remove my-api
+ccl remove my-api
 ```
 
 ### Groups
 
 ```bash
-cl group add backend
-cl group list
-cl group remove backend
+ccl group add backend
+ccl group list
+ccl group remove backend
 ```
 
 ### Workspaces
 
 ```bash
-cl workspace save daily-dev my-api my-frontend my-db
-cl workspace list
-cl workspace restore daily-dev
-cl workspace update daily-dev my-api my-frontend
-cl workspace remove daily-dev
+ccl workspace save daily-dev my-api my-frontend my-db
+ccl workspace list
+ccl workspace restore daily-dev
+ccl workspace update daily-dev my-api my-frontend
+ccl workspace remove daily-dev
 ```
 
 ### Import running processes
 
 ```bash
-cl import
+ccl import
 ```
 
 Scans for running Claude processes not yet registered and lets you import them. Imported projects are automatically named after their folder. If the name conflicts, a suffix like `(1)`, `(2)` is appended.
@@ -125,7 +128,8 @@ The desktop app provides all CLI capabilities plus:
 - **Workspace Detail** — Click a workspace to see its projects, selectively start them, or edit the workspace contents
 - **Save Workspace** — Select any projects (running or not) via checkboxes to save as workspace
 - **Import Dialog** — Detect and bulk-import unregistered Claude processes
-- **Settings Page** — Dedicated full page for language toggle (EN/ZH), auto-start, config export/import
+- **Settings Page** — Language toggle (EN/ZH), auto-start, close-to-tray toggle, config export/import
+- **Command Presets** — Toggle `--continue`, `--resume`, `--fork-session` flags when adding/editing projects
 
 ### Global Hotkey
 
@@ -133,7 +137,7 @@ Press `Ctrl+Shift+C` to bring the GUI window to focus from anywhere.
 
 ## Configuration
 
-Config is stored at `~/.claude-launcher/config.json`:
+Config is stored at `~/.claude-cli-launcher/config.json`:
 
 ```json
 {
@@ -143,7 +147,7 @@ Config is stored at `~/.claude-launcher/config.json`:
       "name": "my-api",
       "label": "API Server",
       "path": "D:\\projects\\my-api",
-      "command": "claude",
+      "command": "claude --continue",
       "group": "backend"
     }
   ],
@@ -153,20 +157,25 @@ Config is stored at `~/.claude-launcher/config.json`:
       "name": "daily-dev",
       "project_ids": ["uuid1", "uuid2"]
     }
-  ]
+  ],
+  "settings": {
+    "close_to_tray": true
+  }
 }
 ```
 
 ## Project Structure
 
 ```
-claude-launcher/
-├── cmd/cl/              # CLI entry point (Cobra commands)
+claude-cli-launcher/
+├── cmd/ccl/             # CLI entry point (Cobra commands)
 ├── gui/                 # Wails desktop app
 │   ├── app.go           # Go bindings exposed to frontend
 │   ├── focus.go         # Window focus & tab switching (UI Automation)
 │   ├── hotkey.go        # Global hotkey (Ctrl+Shift+C)
 │   ├── autostart.go     # Windows registry auto-start
+│   ├── singleton.go     # Single instance mutex
+│   ├── tray.go          # System tray (energye/systray)
 │   └── frontend/        # React + TypeScript + Tailwind
 │       └── src/
 │           ├── components/  # UI components

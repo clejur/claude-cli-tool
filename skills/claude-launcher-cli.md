@@ -1,28 +1,28 @@
 ---
-name: claude-launcher-cli
-description: Skill for managing Claude Code terminal sessions using the `cl` CLI tool. Covers project add/edit/remove/start, group management, workspace save/restore, process import, and status monitoring.
+name: claude-cli-launcher
+description: Skill for managing Claude Code terminal sessions using the `ccl` CLI tool. Covers project add/edit/remove/start, group management, workspace save/restore, process import, and status monitoring.
 ---
 
-# Claude Launcher CLI (`cl`)
+# Claude CLI Launcher (`ccl`)
 
-Manage and launch Claude Code terminal sessions on Windows. Projects are stored in `~/.claude-launcher/config.json` and launched as Windows Terminal tabs.
+Manage and launch Claude Code terminal sessions on Windows. Projects are stored in `~/.claude-cli-launcher/config.json` and launched as Windows Terminal tabs.
 
 ## Prerequisites
 
 - Windows 10/11
 - Windows Terminal (`wt`) in PATH
-- `cl` binary installed (`go install github.com/clejur/claude-launcher/cmd/cl@latest`)
+- `ccl` binary installed (`go install github.com/clejur/claude-launcher/cmd/ccl@latest`)
 
 ## Commands
 
-### `cl add` — Add a project
+### `ccl add` — Add a project
 
 ```bash
 # Interactive mode
-cl add
+ccl add
 
 # With flags
-cl add -n <name> -p <path> -l <label> -c <command> -g <group>
+ccl add -n <name> -p <path> -l <label> -c <command> -g <group>
 ```
 
 | Flag | Description | Required |
@@ -30,24 +30,24 @@ cl add -n <name> -p <path> -l <label> -c <command> -g <group>
 | `-n, --name` | Unique project name | Yes |
 | `-p, --path` | Absolute directory path | Yes |
 | `-l, --label` | Display label (tab title) | Yes |
-| `-c, --command` | Launch command (default: `claude`) | No |
+| `-c, --command` | Launch command (default: `claude --continue`) | No |
 | `-g, --group` | Group to assign to | No |
 
 Rejects duplicate names or paths.
 
-### `cl list` — List projects
+### `ccl list` — List projects
 
 ```bash
-cl list              # All projects
-cl list -g <group>   # Filter by group
+ccl list              # All projects
+ccl list -g <group>   # Filter by group
 ```
 
 Output: table with NAME, LABEL, PATH, GROUP columns.
 
-### `cl edit` — Edit a project
+### `ccl edit` — Edit a project
 
 ```bash
-cl edit <name|id> [flags]
+ccl edit <name|id> [flags]
 ```
 
 | Flag | Description |
@@ -59,20 +59,20 @@ cl edit <name|id> [flags]
 
 Only specified flags are updated; others remain unchanged.
 
-### `cl remove` — Remove a project
+### `ccl remove` — Remove a project
 
 ```bash
-cl remove <name|id>
+ccl remove <name|id>
 ```
 
 Removes the project from config. Does not stop running processes.
 
-### `cl start` — Start projects
+### `ccl start` — Start projects
 
 ```bash
-cl start <name|id>       # Start one project
-cl start --all           # Start all projects
-cl start --group <name>  # Start all in a group
+ccl start <name|id>       # Start one project
+ccl start --all           # Start all projects
+ccl start --group <name>  # Start all in a group
 ```
 
 | Flag | Description |
@@ -80,54 +80,54 @@ cl start --group <name>  # Start all in a group
 | `-a, --all` | Start all configured projects |
 | `-g, --group` | Start all projects in the specified group |
 
-Each project launches as a new Windows Terminal tab with title `✳ <label>`. Uses `pwsh` if available, falls back to `powershell`.
+Each project launches as a new Windows Terminal tab. Uses `claude --name "Label"` for session naming. Uses `pwsh` if available, falls back to `powershell`.
 
-### `cl status` — Check running status
+### `ccl status` — Check running status
 
 ```bash
-cl status                # All projects
-cl status <name|id>      # Single project
-cl status -g <group>     # Filter by group
+ccl status                # All projects
+ccl status <name|id>      # Single project
+ccl status -g <group>     # Filter by group
 ```
 
 Output: table with NAME, GROUP, STATUS (running/stopped), PID.
 
-### `cl group` — Manage groups
+### `ccl group` — Manage groups
 
 ```bash
-cl group add <name>      # Create a group
-cl group list            # List all groups
-cl group remove <name>   # Delete a group
+ccl group add <name>      # Create a group
+ccl group list            # List all groups
+ccl group remove <name>   # Delete a group
 ```
 
 Groups are labels for organizing projects. Removing a group does not remove projects in it.
 
-### `cl workspace` — Manage workspaces
+### `ccl workspace` — Manage workspaces
 
 Workspaces are named snapshots of project sets for batch restore.
 
 ```bash
-cl workspace save <name> <project-names...>    # Save workspace
-cl workspace list                              # List workspaces
-cl workspace restore <name>                    # Launch all projects in workspace
-cl workspace update <name> <project-names...>  # Replace workspace contents
-cl workspace remove <name>                     # Delete workspace
+ccl workspace save <name> <project-names...>    # Save workspace
+ccl workspace list                              # List workspaces
+ccl workspace restore <name>                    # Launch all projects in workspace
+ccl workspace update <name> <project-names...>  # Replace workspace contents
+ccl workspace remove <name>                     # Delete workspace
 ```
 
-`restore` launches all workspace projects as terminal tabs (same behavior as `cl start`).
+`restore` launches all workspace projects as terminal tabs (same behavior as `ccl start`).
 
-### `cl import` — Import running Claude processes
+### `ccl import` — Import running Claude processes
 
 ```bash
-cl import        # Interactive selection
-cl import --all  # Import all without prompting
+ccl import        # Interactive selection
+ccl import --all  # Import all without prompting
 ```
 
 Scans for running Claude processes not already registered. Auto-names by folder. Appends `(1)`, `(2)` suffix on name conflict.
 
 ## Configuration
 
-Stored at `~/.claude-launcher/config.json`:
+Stored at `~/.claude-cli-launcher/config.json`:
 
 ```json
 {
@@ -137,7 +137,7 @@ Stored at `~/.claude-launcher/config.json`:
       "name": "my-api",
       "label": "API Server",
       "path": "D:\\projects\\my-api",
-      "command": "claude",
+      "command": "claude --continue",
       "group": "backend"
     }
   ],
@@ -147,7 +147,10 @@ Stored at `~/.claude-launcher/config.json`:
       "name": "daily-dev",
       "project_ids": ["uuid1", "uuid2"]
     }
-  ]
+  ],
+  "settings": {
+    "close_to_tray": true
+  }
 }
 ```
 
@@ -156,37 +159,37 @@ Stored at `~/.claude-launcher/config.json`:
 ### Set up a new project
 
 ```bash
-cl add -n my-api -p "D:\projects\my-api" -l "API Server" -c claude -g backend
-cl start my-api
+ccl add -n my-api -p "D:\projects\my-api" -l "API Server" -c "claude --continue" -g backend
+ccl start my-api
 ```
 
 ### Restore all work after reboot
 
 ```bash
-cl workspace restore daily-dev
+ccl workspace restore daily-dev
 ```
 
 ### Check what's running
 
 ```bash
-cl status
+ccl status
 ```
 
 ### Import already-running sessions
 
 ```bash
-cl import --all
+ccl import --all
 ```
 
 ### Batch start a group
 
 ```bash
-cl start --group backend
+ccl start --group backend
 ```
 
 ## Error Handling
 
-- `cl start` fails if Windows Terminal (`wt`) is not found in PATH
-- `cl add` rejects duplicate project names or paths
-- `cl edit` / `cl remove` / `cl start <name>` fail if project not found
-- `cl workspace restore` fails if workspace has no valid projects
+- `ccl start` fails if Windows Terminal (`wt`) is not found in PATH
+- `ccl add` rejects duplicate project names or paths
+- `ccl edit` / `ccl remove` / `ccl start <name>` fail if project not found
+- `ccl workspace restore` fails if workspace has no valid projects

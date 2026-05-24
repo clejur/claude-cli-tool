@@ -1,31 +1,34 @@
-# Claude Launcher
+# Claude CLI Launcher
 
-Claude Launcher（`cl`）是一个 Windows 工具，用于管理和快速启动 Claude Code 终端会话。它保存项目配置（目录路径、标签名、启动命令），重启电脑后可以一键恢复所有终端项目。
+Claude CLI Launcher（`ccl`）是一个 Windows 工具，用于管理和快速启动 Claude Code 终端会话。它保存项目配置（目录路径、标签名、启动命令），重启电脑后可以一键恢复所有终端项目。
 
 提供 CLI 命令行工具和 GUI 桌面应用两种使用方式。
 
 ## 功能特性
 
 - **项目管理** — 保存、编辑和组织 Claude Code 项目配置
-- **一键启动** — 以 Windows Terminal 标签页方式启动项目，带 `✳` 图标前缀，自动检测 PowerShell 7 (pwsh)
+- **一键启动** — 以 Windows Terminal 标签页方式启动项目，使用 `claude --name` 设置会话名，自动检测 PowerShell 7 (pwsh)
 - **聚焦运行中的项目** — 将正确的终端窗口唤到前台并切换到对应标签页（支持最小化唤起、多窗口定位）
 - **分组** — 将项目组织到命名分组中，支持批量操作
 - **工作区** — 保存当前运行中项目的快照，一键恢复
 - **进程检测** — 检测正在运行的 Claude 进程并导入为项目（自动以文件夹名命名）
 - **重复检测** — 添加项目时自动检测名称和路径是否重复
 - **状态监控** — 查看哪些项目正在运行（含 PID）
-- **GUI 桌面应用** — 功能完整的 Wails + React 界面
+- **GUI 桌面应用** — 功能完整的 Wails + React 界面，含系统托盘
+- **单实例运行** — GUI 只能运行一个实例，重复启动会激活已有窗口
 - **国际化** — 中英文切换（含错误信息）
 - **全局热键** — `Ctrl+Shift+C` 从任何地方唤起 GUI 窗口
 - **开机自启** — 可选的 Windows 开机自动启动
-- **配置导入导出** — 以 JSON 格式导出/导入配置
+- **最小化到托盘** — 可选的关闭最小化到系统托盘，右键菜单支持显示/退出
+- **配置导入导出** — 以 JSON 格式导出/导入配置（导入后自动刷新界面）
+- **命令预设** — 添加/编辑项目时快速切换 `--continue`、`--resume`、`--fork-session` 标志
 
 ## 安装
 
 ### CLI
 
 ```bash
-go install github.com/clejur/claude-launcher/cmd/cl@latest
+go install github.com/clejur/claude-launcher/cmd/ccl@latest
 ```
 
 ### GUI
@@ -37,7 +40,7 @@ cd gui
 wails build
 ```
 
-生成的可执行文件位于 `gui/build/bin/claude-launcher.exe`。
+生成的可执行文件位于 `gui/build/bin/claude-cli-launcher.exe`。
 
 ## CLI 使用方法
 
@@ -45,31 +48,31 @@ wails build
 
 ```bash
 # 交互式
-cl add
+ccl add
 
 # 使用参数
-cl add -n my-api -p "D:\projects\my-api" -l "API Server" -c claude -g backend
+ccl add -n my-api -p "D:\projects\my-api" -l "API Server" -c "claude --continue" -g backend
 ```
 
 ### 列出项目
 
 ```bash
-cl list              # 所有项目
-cl list -g backend   # 按分组筛选
+ccl list              # 所有项目
+ccl list -g backend   # 按分组筛选
 ```
 
 ### 启动项目
 
 ```bash
-cl start my-api          # 启动单个项目
-cl start --group backend # 启动分组内所有项目
-cl start --all           # 启动全部项目
+ccl start my-api          # 启动单个项目
+ccl start --group backend # 启动分组内所有项目
+ccl start --all           # 启动全部项目
 ```
 
 ### 查看状态
 
 ```bash
-cl status
+ccl status
 ```
 
 显示哪些项目正在运行及其 PID。
@@ -77,37 +80,37 @@ cl status
 ### 编辑项目
 
 ```bash
-cl edit my-api --label "新标签" --path "D:\new\path" --group frontend
+ccl edit my-api --label "新标签" --path "D:\new\path" --group frontend
 ```
 
 ### 删除项目
 
 ```bash
-cl remove my-api
+ccl remove my-api
 ```
 
 ### 分组管理
 
 ```bash
-cl group add backend
-cl group list
-cl group remove backend
+ccl group add backend
+ccl group list
+ccl group remove backend
 ```
 
 ### 工作区
 
 ```bash
-cl workspace save daily-dev my-api my-frontend my-db
-cl workspace list
-cl workspace restore daily-dev
-cl workspace update daily-dev my-api my-frontend
-cl workspace remove daily-dev
+ccl workspace save daily-dev my-api my-frontend my-db
+ccl workspace list
+ccl workspace restore daily-dev
+ccl workspace update daily-dev my-api my-frontend
+ccl workspace remove daily-dev
 ```
 
 ### 导入运行中的进程
 
 ```bash
-cl import
+ccl import
 ```
 
 扫描未注册的 Claude 进程并导入。导入时自动以文件夹名命名，名称冲突时自动添加 `(1)`、`(2)` 后缀。
@@ -125,7 +128,8 @@ cl import
 - **工作区详情** — 点击工作区查看包含的项目，支持选择性启动或编辑工作区内容
 - **保存工作区** — 勾选任意项目（运行中或未运行）保存为工作区
 - **导入对话框** — 检测并批量导入未注册的 Claude 进程
-- **设置页面** — 独立全页设置，含语言切换（中/英）、开机自启、配置导入导出
+- **设置页面** — 语言切换（中/英）、开机自启、关闭到托盘开关、配置导入导出
+- **命令预设** — 添加/编辑项目时可快速切换 `--continue`、`--resume`、`--fork-session` 标志
 
 ### 全局热键
 
@@ -133,7 +137,7 @@ cl import
 
 ## 配置文件
 
-配置存储在 `~/.claude-launcher/config.json`：
+配置存储在 `~/.claude-cli-launcher/config.json`：
 
 ```json
 {
@@ -143,7 +147,7 @@ cl import
       "name": "my-api",
       "label": "API Server",
       "path": "D:\\projects\\my-api",
-      "command": "claude",
+      "command": "claude --continue",
       "group": "backend"
     }
   ],
@@ -153,20 +157,25 @@ cl import
       "name": "daily-dev",
       "project_ids": ["uuid1", "uuid2"]
     }
-  ]
+  ],
+  "settings": {
+    "close_to_tray": true
+  }
 }
 ```
 
 ## 项目结构
 
 ```
-claude-launcher/
-├── cmd/cl/              # CLI 入口（Cobra 命令）
+claude-cli-launcher/
+├── cmd/ccl/             # CLI 入口（Cobra 命令）
 ├── gui/                 # Wails 桌面应用
 │   ├── app.go           # Go 绑定层
 │   ├── focus.go         # 窗口聚焦与标签页切换（UI Automation）
 │   ├── hotkey.go        # 全局热键（Ctrl+Shift+C）
 │   ├── autostart.go     # Windows 注册表开机自启
+│   ├── singleton.go     # 单实例互斥锁
+│   ├── tray.go          # 系统托盘（energye/systray）
 │   └── frontend/        # React + TypeScript + Tailwind
 │       └── src/
 │           ├── components/  # UI 组件
