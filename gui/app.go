@@ -1,0 +1,156 @@
+package main
+
+import (
+	"context"
+	"os"
+
+	"github.com/clejur/claude-launcher/internal/config"
+	"github.com/clejur/claude-launcher/internal/group"
+	"github.com/clejur/claude-launcher/internal/launcher"
+	"github.com/clejur/claude-launcher/internal/model"
+	"github.com/clejur/claude-launcher/internal/project"
+	"github.com/clejur/claude-launcher/internal/status"
+	"github.com/clejur/claude-launcher/internal/workspace"
+)
+
+type App struct {
+	ctx          context.Context
+	store        *config.Store
+	projectSvc   *project.Service
+	groupSvc     *group.Service
+	workspaceSvc *workspace.Service
+	launcherSvc  *launcher.Launcher
+}
+
+func NewApp() *App {
+	store := config.NewStore(config.DefaultPath())
+	return &App{
+		store:        store,
+		projectSvc:   project.NewService(store),
+		groupSvc:     group.NewService(store),
+		workspaceSvc: workspace.NewService(store),
+		launcherSvc:  launcher.New(),
+	}
+}
+
+func (a *App) startup(ctx context.Context) {
+	a.ctx = ctx
+}
+
+func (a *App) Quit() {
+	os.Exit(0)
+}
+
+// Project bindings
+
+func (a *App) AddProject(name, label, path, command, grp string) (*model.Project, error) {
+	return a.projectSvc.Add(name, label, path, command, grp)
+}
+
+func (a *App) ListProjects(grp string) ([]model.Project, error) {
+	return a.projectSvc.List(grp)
+}
+
+func (a *App) EditProject(nameOrID string, label, path, command, grp *string) (*model.Project, error) {
+	opts := &project.EditOptions{
+		Label:   label,
+		Path:    path,
+		Command: command,
+		Group:   grp,
+	}
+	return a.projectSvc.Edit(nameOrID, opts)
+}
+
+func (a *App) RemoveProject(nameOrID string) error {
+	return a.projectSvc.Remove(nameOrID)
+}
+
+func (a *App) StartProject(nameOrID string) error {
+	p, err := a.projectSvc.Find(nameOrID)
+	if err != nil {
+		return err
+	}
+	return a.launcherSvc.Launch([]model.Project{*p})
+}
+
+func (a *App) StartProjects(names []string) error {
+	var projects []model.Project
+	for _, n := range names {
+		p, err := a.projectSvc.Find(n)
+		if err != nil {
+			return err
+		}
+		projects = append(projects, *p)
+	}
+	return a.launcherSvc.Launch(projects)
+}
+
+// Status bindings
+
+type ProjectStatusResult struct {
+	Name    string `json:"name"`
+	ID      string `json:"id"`
+	Group   string `json:"group"`
+	Running bool   `json:"running"`
+	PID     int32  `json:"pid"`
+}
+
+func (a *App) GetStatus() ([]ProjectStatusResult, error) {
+	projects, err := a.projectSvc.List("")
+	if err != nil {
+		return nil, err
+	}
+	processes, err := status.ScanProcesses()
+	if err != nil {
+		return nil, err
+	}
+	matched := status.MatchProjects(projects, processes)
+
+	var results []ProjectStatusResult
+	for _, m := range matched {
+		results = append(results, ProjectStatusResult{
+			Name:    m.Project.Name,
+			ID:      m.Project.ID,
+			Group:   m.Project.Group,
+			Running: m.Running,
+			PID:     m.PID,
+		})
+	}
+	return results, nil
+}
+
+// Group bindings
+
+func (a *App) AddGroup(name string) error {
+	return a.groupSvc.Add(name)
+}
+
+func (a *App) ListGroups() ([]string, error) {
+	return a.groupSvc.List()
+}
+
+func (a *App) RemoveGroup(name string) error {
+	return a.groupSvc.Remove(name)
+}
+
+// Workspace bindings
+
+func (a *App) SaveWorkspace(name string, projectNames []string) (*model.Workspace, error) {
+	return a.workspaceSvc.Save(name, projectNames)
+}
+
+func (a *App) ListWorkspaces() ([]model.Workspace, error) {
+	return a.workspaceSvc.List()
+}
+
+func (a *App) RestoreWorkspace(name string) error {
+	projects, err := a.workspaceSvc.Resolve(name)
+	if err != nil {
+		return err
+	}
+	return a.launcherSvc.Launch(projects)
+}
+
+func (a *App) RemoveWorkspace(name string) error {
+	return a.workspaceSvc.Remove(name)
+}
