@@ -17,8 +17,8 @@ func (a *App) setupTray() {
 
 func onTrayReady() {
 	systray.SetIcon(trayIconData)
-	systray.SetTitle("Claude Launcher")
-	systray.SetTooltip("Claude Launcher")
+	systray.SetTitle("Claude CLI Launcher")
+	systray.SetTooltip("Claude CLI Launcher")
 
 	mShow := systray.AddMenuItem("Show", "Show window")
 	systray.AddSeparator()

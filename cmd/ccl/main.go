@@ -22,8 +22,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "cl",
-	Short: "Claude Launcher - manage and launch Claude Code terminal sessions",
+	Use:   "ccl",
+	Short: "Claude CLI Launcher - manage and launch Claude Code terminal sessions",
 }
 
 func init() {

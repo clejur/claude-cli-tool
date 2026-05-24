@@ -25,7 +25,7 @@ func ensureSingleInstance() {
 }
 
 func activateExistingWindow() {
-	title, _ := syscall.UTF16PtrFromString("Claude Launcher")
+	title, _ := syscall.UTF16PtrFromString("Claude CLI Launcher")
 	hwnd, _, _ := procFindWindow.Call(0, uintptr(unsafe.Pointer(title)))
 	if hwnd == 0 {
 		return

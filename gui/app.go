@@ -234,7 +234,7 @@ func (a *App) SelectDirectory() (string, error) {
 
 func (a *App) ExportConfig() (string, error) {
 	path, err := wailsRuntime.SaveFileDialog(a.ctx, wailsRuntime.SaveDialogOptions{
-		DefaultFilename: "claude-launcher-config.json",
+		DefaultFilename: "claude-cli-launcher-config.json",
 		Filters: []wailsRuntime.FileFilter{
 			{DisplayName: "JSON Files", Pattern: "*.json"},
 		},

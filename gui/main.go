@@ -19,7 +19,7 @@ func main() {
 	app := NewApp()
 
 	err := wails.Run(&options.App{
-		Title:    "Claude Launcher",
+		Title:    "Claude CLI Launcher",
 		Width:    1024,
 		Height:   680,
 		MinWidth: 800,
