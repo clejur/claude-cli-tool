@@ -49,7 +49,8 @@ export function ImportDialog({ onImported, onClose }: ImportDialogProps) {
   }
 
   const baseName = (path: string) => {
-    const parts = path.replace(/\\/g, '/').split('/')
+    const cleaned = path.replace(/[\\/]+$/, '').replace(/\\/g, '/')
+    const parts = cleaned.split('/')
     return parts[parts.length - 1] || 'unnamed'
   }
 
@@ -72,7 +73,7 @@ export function ImportDialog({ onImported, onClose }: ImportDialogProps) {
       const proc = processes[idx]
       const name = dedupName(baseName(proc.cwd), usedNames)
       try {
-        await AddProject(name, name, proc.cwd, 'claude', '')
+        await AddProject(name, name, proc.cwd, 'claude --continue', '')
         usedNames.add(name.toLowerCase())
       } catch (err: any) {
         setError(translateError(err))

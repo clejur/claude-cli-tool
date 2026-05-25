@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useT, useLang } from '../i18n/context'
-import { GetAutoStart, SetAutoStart, GetCloseToTray, SetCloseToTray, ExportConfig, ImportConfig } from '../../wailsjs/go/main/App'
+import { GetAutoStart, SetAutoStart, GetCloseToTray, SetCloseToTray, GetHotkey, SetHotkey, ExportConfig, ImportConfig } from '../../wailsjs/go/main/App'
 
 interface SettingsPageProps {
   onBack: () => void
@@ -12,11 +12,41 @@ export function SettingsPage({ onBack, onImport }: SettingsPageProps) {
   const { lang, setLang } = useLang()
   const [autoStart, setAutoStartState] = useState(false)
   const [closeToTray, setCloseToTrayState] = useState(true)
+  const [hotkey, setHotkeyState] = useState('Ctrl+Shift+C')
+  const [recording, setRecording] = useState(false)
 
   useEffect(() => {
     GetAutoStart().then(v => setAutoStartState(v))
     GetCloseToTray().then(v => setCloseToTrayState(v))
+    GetHotkey().then(v => setHotkeyState(v))
   }, [])
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (!recording) return
+    e.preventDefault()
+    e.stopPropagation()
+
+    const parts: string[] = []
+    if (e.ctrlKey) parts.push('Ctrl')
+    if (e.altKey) parts.push('Alt')
+    if (e.shiftKey) parts.push('Shift')
+
+    const key = e.key
+    if (!['Control', 'Alt', 'Shift', 'Meta'].includes(key)) {
+      parts.push(key.length === 1 ? key.toUpperCase() : key)
+      const combo = parts.join('+')
+      setHotkeyState(combo)
+      SetHotkey(combo)
+      setRecording(false)
+    }
+  }, [recording])
+
+  useEffect(() => {
+    if (recording) {
+      window.addEventListener('keydown', handleKeyDown)
+      return () => window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [recording, handleKeyDown])
 
   const handleAutoStart = async (checked: boolean) => {
     await SetAutoStart(checked)
@@ -95,6 +125,28 @@ export function SettingsPage({ onBack, onImport }: SettingsPageProps) {
                 }`} />
               </button>
             </div>
+          </div>
+        </div>
+
+        <div className="bg-surface-card rounded-card p-5 border border-border">
+          <h2 className="text-sm font-semibold text-content-muted uppercase tracking-wider font-heading mb-4">{t.hotkey}</h2>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm text-content font-medium">
+                {recording ? t.hotkeyRecording : hotkey}
+              </div>
+              <div className="text-xs text-content-muted mt-0.5">{t.hotkeyDesc}</div>
+            </div>
+            <button
+              onClick={() => setRecording(!recording)}
+              className={`px-4 py-1.5 text-sm font-medium rounded-pill border-2 transition-all duration-200 ${
+                recording
+                  ? 'border-primary text-primary bg-primary/5'
+                  : 'border-border text-content-muted hover:border-primary hover:text-primary'
+              }`}
+            >
+              {t.hotkeySet}
+            </button>
           </div>
         </div>
 

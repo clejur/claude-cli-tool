@@ -19,7 +19,8 @@ type Workspace struct {
 }
 
 type Settings struct {
-	CloseToTray bool `json:"closeToTray"`
+	CloseToTray bool   `json:"closeToTray"`
+	Hotkey      string `json:"hotkey"`
 }
 
 type Config struct {

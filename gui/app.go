@@ -224,6 +224,30 @@ func (a *App) SetCloseToTray(v bool) error {
 	return a.store.Save(cfg)
 }
 
+func (a *App) GetHotkey() (string, error) {
+	cfg, err := a.store.Load()
+	if err != nil {
+		return "Ctrl+Shift+C", err
+	}
+	if cfg.Settings.Hotkey == "" {
+		return "Ctrl+Shift+C", nil
+	}
+	return cfg.Settings.Hotkey, nil
+}
+
+func (a *App) SetHotkey(v string) error {
+	cfg, err := a.store.Load()
+	if err != nil {
+		return err
+	}
+	cfg.Settings.Hotkey = v
+	if err := a.store.Save(cfg); err != nil {
+		return err
+	}
+	a.reRegisterHotkey(v)
+	return nil
+}
+
 // Directory picker
 
 func (a *App) SelectDirectory() (string, error) {

@@ -88,7 +88,7 @@ var importCmd = &cobra.Command{
 			proc := unregistered[idx]
 			name := filepath.Base(proc.Cwd)
 			name = dedupName(name, existingNames)
-			p, err := projectSvc.Add(name, name, proc.Cwd, "claude", "")
+			p, err := projectSvc.Add(name, name, proc.Cwd, "claude --continue", "")
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "  Failed to import %s: %v\n", proc.Cwd, err)
 				continue

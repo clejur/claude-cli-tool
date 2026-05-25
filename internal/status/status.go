@@ -27,7 +27,7 @@ func MatchProjects(projects []model.Project, processes []ProcessInfo) []ProjectS
 	for i, proj := range projects {
 		results[i] = ProjectStatus{Project: proj, Running: false}
 		for _, proc := range processes {
-			if isClaudeProcess(proc.Exe) && pathsEqual(proc.Cwd, proj.Path) {
+			if pathsEqual(proc.Cwd, proj.Path) {
 				results[i].Running = true
 				results[i].PID = proc.PID
 				break
@@ -49,25 +49,50 @@ func ScanProcesses() ([]ProcessInfo, error) {
 		if err != nil {
 			continue
 		}
-		if !isClaudeProcess(name) {
-			continue
+		lower := strings.ToLower(name)
+
+		if lower == "claude" || lower == "claude.exe" {
+			cwd, err := p.Cwd()
+			if err != nil {
+				continue
+			}
+			infos = append(infos, ProcessInfo{
+				PID: p.Pid,
+				Exe: name,
+				Cwd: cwd,
+			})
+		} else if isShellProcess(lower) {
+			cmdline, err := p.CmdlineSlice()
+			if err != nil || !cmdlineContainsClaude(cmdline) {
+				continue
+			}
+			cwd, err := p.Cwd()
+			if err != nil {
+				continue
+			}
+			infos = append(infos, ProcessInfo{
+				PID: p.Pid,
+				Exe: name,
+				Cwd: cwd,
+			})
 		}
-		cwd, err := p.Cwd()
-		if err != nil {
-			continue
-		}
-		infos = append(infos, ProcessInfo{
-			PID: p.Pid,
-			Exe: name,
-			Cwd: cwd,
-		})
 	}
 	return infos, nil
 }
 
-func isClaudeProcess(name string) bool {
-	lower := strings.ToLower(name)
-	return lower == "claude" || lower == "claude.exe"
+func isShellProcess(lower string) bool {
+	return lower == "pwsh" || lower == "pwsh.exe" ||
+		lower == "powershell" || lower == "powershell.exe" ||
+		strings.Contains(lower, "powershell")
+}
+
+func cmdlineContainsClaude(args []string) bool {
+	for _, arg := range args {
+		if strings.Contains(strings.ToLower(arg), "claude") {
+			return true
+		}
+	}
+	return false
 }
 
 func pathsEqual(a, b string) bool {
