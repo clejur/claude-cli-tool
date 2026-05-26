@@ -24,7 +24,7 @@ export function WorkspacePage({ workspace, onBack, onUpdated }: WorkspacePagePro
     const wsProjectIds = new Set(ws.projectIds || [])
     const wsProjects = (allProjects || []).filter((p: model.Project) => wsProjectIds.has(p.id))
     setProjects(wsProjects)
-    setSelected(new Set(wsProjects.map((p: model.Project) => p.name)))
+    setSelected(new Set(wsProjects.map((p: model.Project) => p.label)))
 
     const map = new Map<string, ProjectStatus>()
     if (statusList) {
@@ -54,11 +54,11 @@ export function WorkspacePage({ workspace, onBack, onUpdated }: WorkspacePagePro
     return () => clearInterval(interval)
   }, [])
 
-  const toggle = (name: string) => {
+  const toggle = (label: string) => {
     setSelected(prev => {
       const next = new Set(prev)
-      if (next.has(name)) next.delete(name)
-      else next.add(name)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
       return next
     })
   }
@@ -67,14 +67,14 @@ export function WorkspacePage({ workspace, onBack, onUpdated }: WorkspacePagePro
     if (selected.size === projects.length) {
       setSelected(new Set())
     } else {
-      setSelected(new Set(projects.map(p => p.name)))
+      setSelected(new Set(projects.map(p => p.label)))
     }
   }
 
   const handleStartSelected = async () => {
     const toStart = projects
-      .filter(p => selected.has(p.name) && !statuses.get(p.id)?.running)
-      .map(p => p.name)
+      .filter(p => selected.has(p.label) && !statuses.get(p.id)?.running)
+      .map(p => p.label)
     if (toStart.length > 0) {
       await StartProjects(toStart)
     }
@@ -90,7 +90,7 @@ export function WorkspacePage({ workspace, onBack, onUpdated }: WorkspacePagePro
     }
   }
 
-  const notRunningSelected = projects.filter(p => selected.has(p.name) && !statuses.get(p.id)?.running)
+  const notRunningSelected = projects.filter(p => selected.has(p.label) && !statuses.get(p.id)?.running)
 
   return (
     <div className="flex-1 p-6 overflow-auto bg-surface-bg">
@@ -147,12 +147,12 @@ export function WorkspacePage({ workspace, onBack, onUpdated }: WorkspacePagePro
               >
                 <input
                   type="checkbox"
-                  checked={selected.has(p.name)}
-                  onChange={() => toggle(p.name)}
+                  checked={selected.has(p.label)}
+                  onChange={() => toggle(p.label)}
                   className="rounded accent-primary w-4 h-4 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-content truncate">{p.label || p.name}</div>
+                  <div className="text-sm font-semibold text-content truncate">{p.label}</div>
                   <div className="text-xs text-content-subtle truncate">{p.path}</div>
                 </div>
                 <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${

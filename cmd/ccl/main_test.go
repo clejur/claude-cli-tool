@@ -28,11 +28,11 @@ func TestFullWorkflow(t *testing.T) {
 		t.Fatalf("add group: %v", err)
 	}
 
-	p1, err := projectSvc.Add("api", "API Server", `D:\projects\api`, "claude", "backend")
+	p1, err := projectSvc.Add("API Server", `D:\projects\api`, "claude", "backend")
 	if err != nil {
 		t.Fatalf("add project: %v", err)
 	}
-	p2, err := projectSvc.Add("web", "Web App", `D:\projects\web`, "claude --resume", "backend")
+	p2, err := projectSvc.Add("Web App", `D:\projects\web`, "claude --resume", "backend")
 	if err != nil {
 		t.Fatalf("add project: %v", err)
 	}
@@ -45,7 +45,7 @@ func TestFullWorkflow(t *testing.T) {
 		t.Fatalf("expected 2 projects, got %d", len(projects))
 	}
 
-	ws, err := workspaceSvc.Save("daily", []string{p1.Name, p2.Name})
+	ws, err := workspaceSvc.Save("daily", []string{p1.Label, p2.Label})
 	if err != nil {
 		t.Fatalf("save workspace: %v", err)
 	}
@@ -69,7 +69,7 @@ func TestFullWorkflow(t *testing.T) {
 		t.Fatalf("config should have 2 projects, got %d", len(cfg.Projects))
 	}
 
-	err = projectSvc.Remove("api")
+	err = projectSvc.Remove("API Server")
 	if err != nil {
 		t.Fatalf("remove: %v", err)
 	}

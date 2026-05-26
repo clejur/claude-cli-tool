@@ -47,7 +47,7 @@ export function EditProjectDialog({ project, groups, onEdit, onClose }: EditProj
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-card p-6 w-[420px] border border-border shadow-xl">
-        <h2 className="text-lg font-bold font-heading mb-4">{t.editTitle} {project.name}</h2>
+        <h2 className="text-lg font-bold font-heading mb-4">{t.editTitle} {project.label}</h2>
         {error && <p className="text-red-500 text-sm mb-3 bg-red-50 px-3 py-2 rounded-xl">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
@@ -62,7 +62,7 @@ export function EditProjectDialog({ project, groups, onEdit, onClose }: EditProj
             />
           </div>
           <div>
-            <label className="block text-sm text-content-muted font-medium mb-1">{t.tabLabel}</label>
+            <label className="block text-sm text-content-muted font-medium mb-1">{t.nameRequired}</label>
             <input value={label} onChange={(e) => setLabel(e.target.value)} className={inputClass} />
           </div>
           <div>

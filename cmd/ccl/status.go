@@ -48,7 +48,7 @@ var statusCmd = &cobra.Command{
 
 func printStatus(results []status.ProjectStatus) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "NAME\tGROUP\tSTATUS\tPID")
+	fmt.Fprintln(w, "LABEL\tGROUP\tSTATUS\tPID")
 	for _, r := range results {
 		statusStr := "stopped"
 		pidStr := "-"
@@ -56,7 +56,7 @@ func printStatus(results []status.ProjectStatus) {
 			statusStr = "running"
 			pidStr = fmt.Sprintf("%d", r.PID)
 		}
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", r.Project.Name, r.Project.Group, statusStr, pidStr)
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", r.Project.Label, r.Project.Group, statusStr, pidStr)
 	}
 	w.Flush()
 }

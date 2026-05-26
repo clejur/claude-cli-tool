@@ -79,22 +79,22 @@ var importCmd = &cobra.Command{
 			}
 		}
 
-		existingNames := make(map[string]bool)
+		existingLabels := make(map[string]bool)
 		for _, p := range existing {
-			existingNames[strings.ToLower(p.Name)] = true
+			existingLabels[strings.ToLower(p.Label)] = true
 		}
 
 		for _, idx := range selected {
 			proc := unregistered[idx]
-			name := filepath.Base(proc.Cwd)
-			name = dedupName(name, existingNames)
-			p, err := projectSvc.Add(name, name, proc.Cwd, "claude --continue", "")
+			label := filepath.Base(proc.Cwd)
+			label = dedupName(label, existingLabels)
+			p, err := projectSvc.Add(label, proc.Cwd, "claude --continue", "")
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "  Failed to import %s: %v\n", proc.Cwd, err)
 				continue
 			}
-			existingNames[strings.ToLower(name)] = true
-			fmt.Printf("  Imported %q (%s)\n", p.Name, p.Path)
+			existingLabels[strings.ToLower(label)] = true
+			fmt.Printf("  Imported %q (%s)\n", p.Label, p.Path)
 		}
 		return nil
 	},

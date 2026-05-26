@@ -1,6 +1,5 @@
 export interface Project {
   id: string;
-  name: string;
   label: string;
   path: string;
   command: string;
@@ -15,8 +14,8 @@ export interface Workspace {
 }
 
 export interface ProjectStatus {
-  name: string;
   id: string;
+  label: string;
   group: string;
   running: boolean;
   pid: number;

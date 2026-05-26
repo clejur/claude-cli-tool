@@ -33,7 +33,7 @@ func (s *Service) Save(name string, projectNames []string) (*model.Workspace, er
 	for _, pName := range projectNames {
 		found := false
 		for _, p := range cfg.Projects {
-			if p.Name == pName || p.ID == pName {
+			if p.Label == pName || p.ID == pName {
 				projectIDs = append(projectIDs, p.ID)
 				found = true
 				break
@@ -115,7 +115,7 @@ func (s *Service) Update(name string, projectNames []string) (*model.Workspace, 
 	for _, pName := range projectNames {
 		found := false
 		for _, p := range cfg.Projects {
-			if p.Name == pName || p.ID == pName {
+			if p.Label == pName || p.ID == pName {
 				projectIDs = append(projectIDs, p.ID)
 				found = true
 				break

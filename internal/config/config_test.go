@@ -30,7 +30,7 @@ func TestSaveAndLoad(t *testing.T) {
 
 	cfg := &model.Config{
 		Projects: []model.Project{
-			{ID: "test-id", Name: "test-proj", Path: "D:\\test"},
+			{ID: "test-id", Label: "test-proj", Path: "D:\\test"},
 		},
 		Groups:     []string{"backend"},
 		Workspaces: []model.Workspace{},
@@ -47,8 +47,8 @@ func TestSaveAndLoad(t *testing.T) {
 	if len(loaded.Projects) != 1 {
 		t.Fatalf("expected 1 project, got %d", len(loaded.Projects))
 	}
-	if loaded.Projects[0].Name != "test-proj" {
-		t.Fatalf("expected name test-proj, got %s", loaded.Projects[0].Name)
+	if loaded.Projects[0].Label != "test-proj" {
+		t.Fatalf("expected label test-proj, got %s", loaded.Projects[0].Label)
 	}
 }
 

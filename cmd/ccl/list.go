@@ -25,9 +25,9 @@ var listCmd = &cobra.Command{
 		}
 
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "NAME\tLABEL\tPATH\tGROUP\tCOMMAND")
+		fmt.Fprintln(w, "LABEL\tPATH\tGROUP\tCOMMAND")
 		for _, p := range projects {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", p.Name, p.Label, p.Path, p.Group, p.Command)
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", p.Label, p.Path, p.Group, p.Command)
 		}
 		w.Flush()
 		return nil

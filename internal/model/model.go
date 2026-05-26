@@ -4,7 +4,6 @@ import "time"
 
 type Project struct {
 	ID        string    `json:"id"`
-	Name      string    `json:"name"`
 	Label     string    `json:"label"`
 	Path      string    `json:"path"`
 	Command   string    `json:"command"`

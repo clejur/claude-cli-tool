@@ -43,6 +43,7 @@ func ScanProcesses() ([]ProcessInfo, error) {
 		return nil, err
 	}
 
+	seen := make(map[string]bool)
 	var infos []ProcessInfo
 	for _, p := range procs {
 		name, err := p.Name()
@@ -51,31 +52,41 @@ func ScanProcesses() ([]ProcessInfo, error) {
 		}
 		lower := strings.ToLower(name)
 
+		var cwd string
 		if lower == "claude" || lower == "claude.exe" {
-			cwd, err := p.Cwd()
+			c, err := p.Cwd()
 			if err != nil {
 				continue
 			}
-			infos = append(infos, ProcessInfo{
-				PID: p.Pid,
-				Exe: name,
-				Cwd: cwd,
-			})
+			cwd = c
 		} else if isShellProcess(lower) {
 			cmdline, err := p.CmdlineSlice()
 			if err != nil || !cmdlineContainsClaude(cmdline) {
 				continue
 			}
-			cwd, err := p.Cwd()
-			if err != nil {
+			cwd = resolveCwd(p, cmdline)
+		} else if lower == "node" || lower == "node.exe" {
+			cmdline, err := p.CmdlineSlice()
+			if err != nil || !isClaudeCodeNode(cmdline) {
 				continue
 			}
-			infos = append(infos, ProcessInfo{
-				PID: p.Pid,
-				Exe: name,
-				Cwd: cwd,
-			})
+			cwd = resolveCwd(p, cmdline)
+		} else {
+			continue
 		}
+		if cwd == "" {
+			continue
+		}
+		key := strings.ToLower(filepath.Clean(cwd))
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		infos = append(infos, ProcessInfo{
+			PID: p.Pid,
+			Exe: name,
+			Cwd: cwd,
+		})
 	}
 	return infos, nil
 }
@@ -93,6 +104,44 @@ func cmdlineContainsClaude(args []string) bool {
 		}
 	}
 	return false
+}
+
+func isClaudeCodeNode(args []string) bool {
+	for _, arg := range args {
+		if strings.Contains(strings.ToLower(arg), "claude-code/cli.js") {
+			return true
+		}
+	}
+	return false
+}
+
+func resolveCwd(p *process.Process, cmdline []string) string {
+	cwd, err := p.Cwd()
+	if err != nil {
+		return parseWorkingDirectory(cmdline)
+	}
+	// If Cwd is system32, it's likely wrong (WT-launched shells report this)
+	if strings.EqualFold(filepath.Clean(cwd), `C:\Windows\system32`) || strings.EqualFold(filepath.Clean(cwd), `C:\Windows\System32`) {
+		if parsed := parseWorkingDirectory(cmdline); parsed != "" {
+			return parsed
+		}
+	}
+	return cwd
+}
+
+func parseWorkingDirectory(args []string) string {
+	for i, arg := range args {
+		lower := strings.ToLower(arg)
+		if lower == "-workingdirectory" || lower == "--working-directory" {
+			if i+1 < len(args) {
+				return strings.Trim(args[i+1], "\"")
+			}
+		}
+		if strings.HasPrefix(lower, "-workingdirectory=") {
+			return strings.Trim(strings.SplitN(arg, "=", 2)[1], "\"")
+		}
+	}
+	return ""
 }
 
 func pathsEqual(a, b string) bool {

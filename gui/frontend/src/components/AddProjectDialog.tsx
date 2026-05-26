@@ -12,14 +12,13 @@ const commandPresets = [
 interface AddProjectDialogProps {
   groups: string[]
   defaultGroup?: string
-  onAdd: (name: string, label: string, path: string, command: string, group: string) => Promise<void>
+  onAdd: (label: string, path: string, command: string, group: string) => Promise<void>
   onClose: () => void
 }
 
 export function AddProjectDialog({ groups, defaultGroup = '', onAdd, onClose }: AddProjectDialogProps) {
   const t = useT()
   const translateError = useTranslateError()
-  const [name, setName] = useState('')
   const [label, setLabel] = useState('')
   const [path, setPath] = useState('')
   const [command, setCommand] = useState('claude --continue')
@@ -28,12 +27,12 @@ export function AddProjectDialog({ groups, defaultGroup = '', onAdd, onClose }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name || !path) {
+    if (!label || !path) {
       setError(t.namePathRequired)
       return
     }
     try {
-      await onAdd(name, label || name, path, command, group)
+      await onAdd(label, path, command, group)
       onClose()
     } catch (err: any) {
       setError(translateError(err))
@@ -70,7 +69,7 @@ export function AddProjectDialog({ groups, defaultGroup = '', onAdd, onClose }: 
                   if (p) {
                     setPath(p)
                     const folderName = p.replace(/[\\/]+$/, '').split(/[\\/]/).pop() || ''
-                    if (!name) setName(folderName)
+                    if (!label) setLabel(folderName)
                   }
                 }}
                 className="px-3 py-2 text-sm text-content-muted border-2 border-border rounded-input hover:border-primary hover:text-primary transition-all shrink-0"
@@ -84,11 +83,7 @@ export function AddProjectDialog({ groups, defaultGroup = '', onAdd, onClose }: 
           </div>
           <div>
             <label className="block text-sm text-content-muted font-medium mb-1">{t.nameRequired}</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder={t.namePlaceholder} />
-          </div>
-          <div>
-            <label className="block text-sm text-content-muted font-medium mb-1">{t.tabLabel}</label>
-            <input value={label} onChange={(e) => setLabel(e.target.value)} className={inputClass} placeholder={t.labelPlaceholder} />
+            <input value={label} onChange={(e) => setLabel(e.target.value)} className={inputClass} placeholder={t.namePlaceholder} />
           </div>
           <div>
             <label className="block text-sm text-content-muted font-medium mb-1">{t.command}</label>

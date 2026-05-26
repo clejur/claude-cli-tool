@@ -33,8 +33,8 @@ export function useProjects(groupFilter: string) {
     return () => clearInterval(interval)
   }, [refreshStatus])
 
-  const add = async (name: string, label: string, path: string, command: string, group: string) => {
-    await AddProject(name, label, path, command, group)
+  const add = async (label: string, path: string, command: string, group: string) => {
+    await AddProject(label, path, command, group)
     await refresh()
     await refreshStatus()
   }

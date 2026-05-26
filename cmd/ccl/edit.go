@@ -46,7 +46,7 @@ var editCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Updated project %q\n", p.Name)
+		fmt.Printf("Updated project %q\n", p.Label)
 		return nil
 	},
 }

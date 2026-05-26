@@ -39,7 +39,6 @@ function App() {
 
   const filteredProjects = projects.filter(p =>
     !search ||
-    p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.label.toLowerCase().includes(search.toLowerCase()) ||
     p.path.toLowerCase().includes(search.toLowerCase())
   )

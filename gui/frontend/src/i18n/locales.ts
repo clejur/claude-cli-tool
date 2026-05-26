@@ -3,7 +3,7 @@ export const locales = {
     // App header
     allProjects: 'All Projects',
     addProject: '+ Add Project',
-    import: 'Import',
+    import: 'Scan',
     searchPlaceholder: 'Search projects...',
     noProjectsFound: 'No projects found. Click "+ Add Project" to get started.',
 
@@ -28,10 +28,8 @@ export const locales = {
 
     // AddProjectDialog
     addProjectTitle: 'Add Project',
-    nameRequired: 'Name *',
+    nameRequired: 'Label *',
     namePlaceholder: 'my-api',
-    tabLabel: 'Tab Label',
-    labelPlaceholder: 'Same as name if empty',
     pathRequired: 'Path *',
     pathPlaceholder: 'D:\\projects\\my-api',
     browse: 'Browse',
@@ -41,7 +39,7 @@ export const locales = {
     cancel: 'Cancel',
     confirm: 'Confirm',
     add: 'Add',
-    namePathRequired: 'Name and path are required',
+    namePathRequired: 'Label and path are required',
 
     // EditProjectDialog
     editTitle: 'Edit:',
@@ -101,7 +99,7 @@ export const locales = {
   zh: {
     allProjects: '所有项目',
     addProject: '+ 添加项目',
-    import: '导入',
+    import: '扫描',
     searchPlaceholder: '搜索项目...',
     noProjectsFound: '暂无项目，点击"+ 添加项目"开始。',
 
@@ -123,10 +121,8 @@ export const locales = {
     moveToGroup: '移动到分组',
 
     addProjectTitle: '添加项目',
-    nameRequired: '名称 *',
+    nameRequired: '标签名 *',
     namePlaceholder: 'my-api',
-    tabLabel: '标签名',
-    labelPlaceholder: '留空则与名称相同',
     pathRequired: '路径 *',
     pathPlaceholder: 'D:\\projects\\my-api',
     browse: '浏览',
@@ -136,7 +132,7 @@ export const locales = {
     cancel: '取消',
     confirm: '确认',
     add: '添加',
-    namePathRequired: '名称和路径为必填项',
+    namePathRequired: '标签名和路径为必填项',
 
     editTitle: '编辑：',
     save: '保存',

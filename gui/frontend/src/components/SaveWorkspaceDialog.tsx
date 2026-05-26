@@ -9,7 +9,6 @@ interface SaveWorkspaceDialogProps {
 }
 
 interface ProjectItem {
-  name: string
   label: string
   path: string
   running: boolean
@@ -34,7 +33,6 @@ export function SaveWorkspaceDialog({ onSave, onClose }: SaveWorkspaceDialogProp
           }
         }
         const items = (projects || []).map((p: model.Project) => ({
-          name: p.name,
           label: p.label,
           path: p.path,
           running: runningIds.has(p.id),
@@ -45,7 +43,7 @@ export function SaveWorkspaceDialog({ onSave, onClose }: SaveWorkspaceDialogProp
           return 0
         })
         setAllProjects(items)
-        setSelected(new Set(items.filter((p: ProjectItem) => p.running).map((p: ProjectItem) => p.name)))
+        setSelected(new Set(items.filter((p: ProjectItem) => p.running).map((p: ProjectItem) => p.label)))
       } catch (err: any) {
         setError(err.toString())
       }
@@ -66,7 +64,7 @@ export function SaveWorkspaceDialog({ onSave, onClose }: SaveWorkspaceDialogProp
     if (selected.size === allProjects.length) {
       setSelected(new Set())
     } else {
-      setSelected(new Set(allProjects.map(p => p.name)))
+      setSelected(new Set(allProjects.map(p => p.label)))
     }
   }
 
@@ -113,13 +111,13 @@ export function SaveWorkspaceDialog({ onSave, onClose }: SaveWorkspaceDialogProp
             <div className="space-y-1 max-h-56 overflow-auto">
               {allProjects.map(p => (
                 <label
-                  key={p.name}
+                  key={p.label}
                   className="flex items-center gap-3 px-3 py-2.5 hover:bg-surface-alt rounded-xl cursor-pointer transition-colors"
                 >
                   <input
                     type="checkbox"
-                    checked={selected.has(p.name)}
-                    onChange={() => toggle(p.name)}
+                    checked={selected.has(p.label)}
+                    onChange={() => toggle(p.label)}
                     className="rounded accent-primary"
                   />
                   <div className="flex-1 min-w-0">

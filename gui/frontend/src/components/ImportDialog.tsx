@@ -67,14 +67,14 @@ export function ImportDialog({ onImported, onClose }: ImportDialogProps) {
     setError('')
     const existingProjects = await ListProjects('')
     const usedNames = new Set<string>(
-      (existingProjects || []).map((p: any) => (p.name as string).toLowerCase())
+      (existingProjects || []).map((p: any) => (p.label as string).toLowerCase())
     )
     for (const idx of selected) {
       const proc = processes[idx]
-      const name = dedupName(baseName(proc.cwd), usedNames)
+      const label = dedupName(baseName(proc.cwd), usedNames)
       try {
-        await AddProject(name, name, proc.cwd, 'claude --continue', '')
-        usedNames.add(name.toLowerCase())
+        await AddProject(label, proc.cwd, 'claude --continue', '')
+        usedNames.add(label.toLowerCase())
       } catch (err: any) {
         setError(translateError(err))
         setImporting(false)

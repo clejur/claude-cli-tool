@@ -27,24 +27,23 @@ func NewService(store *config.Store) *Service {
 	return &Service{store: store}
 }
 
-func (s *Service) Add(name, label, path, command, group string) (*model.Project, error) {
+func (s *Service) Add(label, path, command, group string) (*model.Project, error) {
 	cfg, err := s.store.Load()
 	if err != nil {
 		return nil, err
 	}
 
 	for _, p := range cfg.Projects {
-		if p.Name == name {
-			return nil, fmt.Errorf("ERR_NAME_EXISTS|%s", name)
+		if p.Label == label {
+			return nil, fmt.Errorf("ERR_NAME_EXISTS|%s", label)
 		}
 		if strings.EqualFold(filepath.Clean(p.Path), filepath.Clean(path)) {
-			return nil, fmt.Errorf("ERR_PATH_EXISTS|%s|%s", path, p.Name)
+			return nil, fmt.Errorf("ERR_PATH_EXISTS|%s|%s", path, p.Label)
 		}
 	}
 
 	project := model.Project{
 		ID:        uuid.New().String(),
-		Name:      name,
 		Label:     label,
 		Path:      path,
 		Command:   command,
@@ -78,21 +77,21 @@ func (s *Service) List(group string) ([]model.Project, error) {
 	return filtered, nil
 }
 
-func (s *Service) Find(nameOrID string) (*model.Project, error) {
+func (s *Service) Find(labelOrID string) (*model.Project, error) {
 	cfg, err := s.store.Load()
 	if err != nil {
 		return nil, err
 	}
 
 	for i := range cfg.Projects {
-		if cfg.Projects[i].Name == nameOrID || cfg.Projects[i].ID == nameOrID {
+		if cfg.Projects[i].Label == labelOrID || cfg.Projects[i].ID == labelOrID {
 			return &cfg.Projects[i], nil
 		}
 	}
-	return nil, fmt.Errorf("project %q not found", nameOrID)
+	return nil, fmt.Errorf("project %q not found", labelOrID)
 }
 
-func (s *Service) Remove(nameOrID string) error {
+func (s *Service) Remove(labelOrID string) error {
 	cfg, err := s.store.Load()
 	if err != nil {
 		return err
@@ -100,20 +99,20 @@ func (s *Service) Remove(nameOrID string) error {
 
 	idx := -1
 	for i := range cfg.Projects {
-		if cfg.Projects[i].Name == nameOrID || cfg.Projects[i].ID == nameOrID {
+		if cfg.Projects[i].Label == labelOrID || cfg.Projects[i].ID == labelOrID {
 			idx = i
 			break
 		}
 	}
 	if idx == -1 {
-		return fmt.Errorf("project %q not found", nameOrID)
+		return fmt.Errorf("project %q not found", labelOrID)
 	}
 
 	cfg.Projects = append(cfg.Projects[:idx], cfg.Projects[idx+1:]...)
 	return s.store.Save(cfg)
 }
 
-func (s *Service) Edit(nameOrID string, opts *EditOptions) (*model.Project, error) {
+func (s *Service) Edit(labelOrID string, opts *EditOptions) (*model.Project, error) {
 	cfg, err := s.store.Load()
 	if err != nil {
 		return nil, err
@@ -121,13 +120,13 @@ func (s *Service) Edit(nameOrID string, opts *EditOptions) (*model.Project, erro
 
 	idx := -1
 	for i := range cfg.Projects {
-		if cfg.Projects[i].Name == nameOrID || cfg.Projects[i].ID == nameOrID {
+		if cfg.Projects[i].Label == labelOrID || cfg.Projects[i].ID == labelOrID {
 			idx = i
 			break
 		}
 	}
 	if idx == -1 {
-		return nil, fmt.Errorf("project %q not found", nameOrID)
+		return nil, fmt.Errorf("project %q not found", labelOrID)
 	}
 
 	p := &cfg.Projects[idx]

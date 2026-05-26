@@ -49,40 +49,40 @@ func (a *App) Quit() {
 
 // Project bindings
 
-func (a *App) AddProject(name, label, path, command, grp string) (*model.Project, error) {
-	return a.projectSvc.Add(name, label, path, command, grp)
+func (a *App) AddProject(label, path, command, grp string) (*model.Project, error) {
+	return a.projectSvc.Add(label, path, command, grp)
 }
 
 func (a *App) ListProjects(grp string) ([]model.Project, error) {
 	return a.projectSvc.List(grp)
 }
 
-func (a *App) EditProject(nameOrID string, label, path, command, grp *string) (*model.Project, error) {
+func (a *App) EditProject(labelOrID string, label, path, command, grp *string) (*model.Project, error) {
 	opts := &project.EditOptions{
 		Label:   label,
 		Path:    path,
 		Command: command,
 		Group:   grp,
 	}
-	return a.projectSvc.Edit(nameOrID, opts)
+	return a.projectSvc.Edit(labelOrID, opts)
 }
 
-func (a *App) RemoveProject(nameOrID string) error {
-	return a.projectSvc.Remove(nameOrID)
+func (a *App) RemoveProject(labelOrID string) error {
+	return a.projectSvc.Remove(labelOrID)
 }
 
-func (a *App) StartProject(nameOrID string) error {
-	p, err := a.projectSvc.Find(nameOrID)
+func (a *App) StartProject(labelOrID string) error {
+	p, err := a.projectSvc.Find(labelOrID)
 	if err != nil {
 		return err
 	}
 	return a.launcherSvc.Launch([]model.Project{*p})
 }
 
-func (a *App) StartProjects(names []string) error {
+func (a *App) StartProjects(labels []string) error {
 	var projects []model.Project
-	for _, n := range names {
-		p, err := a.projectSvc.Find(n)
+	for _, l := range labels {
+		p, err := a.projectSvc.Find(l)
 		if err != nil {
 			return err
 		}
@@ -102,8 +102,8 @@ func (a *App) StopProject(pid int32) error {
 // Status bindings
 
 type ProjectStatusResult struct {
-	Name    string `json:"name"`
 	ID      string `json:"id"`
+	Label   string `json:"label"`
 	Group   string `json:"group"`
 	Running bool   `json:"running"`
 	PID     int32  `json:"pid"`
@@ -123,8 +123,8 @@ func (a *App) GetStatus() ([]ProjectStatusResult, error) {
 	var results []ProjectStatusResult
 	for _, m := range matched {
 		results = append(results, ProjectStatusResult{
-			Name:    m.Project.Name,
 			ID:      m.Project.ID,
+			Label:   m.Project.Label,
 			Group:   m.Project.Group,
 			Running: m.Running,
 			PID:     m.PID,

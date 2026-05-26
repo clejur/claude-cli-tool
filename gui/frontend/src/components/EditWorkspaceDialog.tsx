@@ -22,10 +22,10 @@ export function EditWorkspaceDialog({ workspace, onSaved, onClose }: EditWorkspa
         const projects = await ListProjects('')
         setAllProjects(projects || [])
         const wsIds = new Set(workspace.projectIds || [])
-        const selectedNames = (projects || [])
+        const selectedLabels = (projects || [])
           .filter((p: model.Project) => wsIds.has(p.id))
-          .map((p: model.Project) => p.name)
-        setSelected(new Set(selectedNames))
+          .map((p: model.Project) => p.label)
+        setSelected(new Set(selectedLabels))
       } catch (err: any) {
         setError(err.toString())
       }
@@ -33,11 +33,11 @@ export function EditWorkspaceDialog({ workspace, onSaved, onClose }: EditWorkspa
     })()
   }, [workspace])
 
-  const toggle = (name: string) => {
+  const toggle = (label: string) => {
     setSelected(prev => {
       const next = new Set(prev)
-      if (next.has(name)) next.delete(name)
-      else next.add(name)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
       return next
     })
   }
@@ -46,7 +46,7 @@ export function EditWorkspaceDialog({ workspace, onSaved, onClose }: EditWorkspa
     if (selected.size === allProjects.length) {
       setSelected(new Set())
     } else {
-      setSelected(new Set(allProjects.map(p => p.name)))
+      setSelected(new Set(allProjects.map(p => p.label)))
     }
   }
 
@@ -83,12 +83,12 @@ export function EditWorkspaceDialog({ workspace, onSaved, onClose }: EditWorkspa
                 >
                   <input
                     type="checkbox"
-                    checked={selected.has(p.name)}
-                    onChange={() => toggle(p.name)}
+                    checked={selected.has(p.label)}
+                    onChange={() => toggle(p.label)}
                     className="rounded accent-primary"
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-content font-medium truncate">{p.label || p.name}</div>
+                    <div className="text-sm text-content font-medium truncate">{p.label}</div>
                     <div className="text-xs text-content-subtle truncate">{p.path}</div>
                   </div>
                 </label>

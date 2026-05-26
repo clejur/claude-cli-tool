@@ -12,7 +12,7 @@ Available as both a CLI tool and a GUI desktop app.
 - **Groups** — Organize projects into named groups for batch operations
 - **Workspaces** — Save snapshots of running projects and restore them together
 - **Process Detection** — Detect running Claude processes and import them (auto-named by folder)
-- **Duplicate Prevention** — Rejects adding projects with duplicate names or paths
+- **Duplicate Prevention** — Rejects adding projects with duplicate labels or paths
 - **Status Monitoring** — See which projects are currently running (with PID)
 - **GUI Desktop App** — Full-featured Wails + React interface with system tray
 - **Single Instance** — Only one GUI instance can run; re-launching activates the existing window
@@ -51,7 +51,7 @@ The binary will be at `gui/build/bin/claude-cli-launcher.exe`.
 ccl add
 
 # With flags
-ccl add -n my-api -p "D:\projects\my-api" -l "API Server" -c "claude --continue" -g backend
+ccl add -l "API Server" -p "D:\projects\my-api" -c "claude --continue" -g backend
 ```
 
 ### List projects
@@ -64,7 +64,7 @@ ccl list -g backend   # Filter by group
 ### Start projects
 
 ```bash
-ccl start my-api          # Start one project
+ccl start "API Server"    # Start one project
 ccl start --group backend # Start all in a group
 ccl start --all           # Start everything
 ```
@@ -80,13 +80,13 @@ Shows which projects are running and their PIDs.
 ### Edit a project
 
 ```bash
-ccl edit my-api --label "New Label" --path "D:\new\path" --group frontend
+ccl edit "API Server" --label "New Label" --path "D:\new\path" --group frontend
 ```
 
 ### Remove a project
 
 ```bash
-ccl remove my-api
+ccl remove "API Server"
 ```
 
 ### Groups
@@ -113,16 +113,16 @@ ccl workspace remove daily-dev
 ccl import
 ```
 
-Scans for running Claude processes not yet registered and lets you import them. Imported projects are automatically named after their folder. If the name conflicts, a suffix like `(1)`, `(2)` is appended.
+Scans for running Claude processes not yet registered and lets you import them. Imported projects are automatically labeled after their folder. If the label conflicts, a suffix like `(1)`, `(2)` is appended.
 
 ## GUI Features
 
 The desktop app provides all CLI capabilities plus:
 
-- **Project Cards** — Visual grid showing project name, path, group, and running status
+- **Project Cards** — Visual grid showing project label, path, group, and running status
 - **Focus Button** — For running projects, click "Focus" to bring the terminal window to foreground and switch to the correct tab (works even when minimized, supports multiple terminal windows)
 - **Folder Picker** — Browse button on path input to select project directory
-- **Search** — Filter projects by name, label, or path
+- **Search** — Filter projects by label or path
 - **Right-click Context Menu** — Focus/Stop, Edit, Move to group, Delete
 - **Sidebar** — Collapsible "Projects" and "Workspaces" sections with group navigation
 - **Workspace Detail** — Click a workspace to see its projects, selectively start them, or edit the workspace contents
@@ -144,7 +144,6 @@ Config is stored at `~/.claude-cli-launcher/config.json`:
   "projects": [
     {
       "id": "uuid",
-      "name": "my-api",
       "label": "API Server",
       "path": "D:\\projects\\my-api",
       "command": "claude --continue",

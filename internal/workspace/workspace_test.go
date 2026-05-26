@@ -14,9 +14,9 @@ func setupTest(t *testing.T) (*Service, *config.Store) {
 
 	cfg := &model.Config{
 		Projects: []model.Project{
-			{ID: "id1", Name: "api"},
-			{ID: "id2", Name: "web"},
-			{ID: "id3", Name: "tool"},
+			{ID: "id1", Label: "api"},
+			{ID: "id2", Label: "web"},
+			{ID: "id3", Label: "tool"},
 		},
 		Groups:     []string{},
 		Workspaces: []model.Workspace{},

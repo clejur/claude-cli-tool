@@ -51,7 +51,7 @@ var startCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Starting %q...\n", p.Name)
+		fmt.Printf("Starting %q...\n", p.Label)
 		return launcherSvc.Launch([]model.Project{*p})
 	},
 }
