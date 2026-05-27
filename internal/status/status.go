@@ -53,7 +53,7 @@ func ScanProcesses() ([]ProcessInfo, error) {
 		lower := strings.ToLower(name)
 
 		var cwd string
-		if lower == "claude" || lower == "claude.exe" {
+		if lower == "claude" || lower == "claude.exe" || isClaudeExeOld(lower) {
 			c, err := p.Cwd()
 			if err != nil {
 				continue
@@ -104,6 +104,10 @@ func cmdlineContainsClaude(args []string) bool {
 		}
 	}
 	return false
+}
+
+func isClaudeExeOld(lower string) bool {
+	return strings.HasPrefix(lower, "claude.exe.old.")
 }
 
 func isClaudeCodeNode(args []string) bool {
