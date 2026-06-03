@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -77,6 +78,17 @@ func (a *App) StartProject(labelOrID string) error {
 		return err
 	}
 	return a.launcherSvc.Launch([]model.Project{*p})
+}
+
+func (a *App) StartNewSession(labelOrID string) error {
+	p, err := a.projectSvc.Find(labelOrID)
+	if err != nil {
+		return err
+	}
+	count := status.CountProcessesAtPath(p.Path)
+	suffix := count + 1
+	sessionName := fmt.Sprintf("%s#%d", p.Label, suffix)
+	return a.launcherSvc.LaunchNewSession(*p, sessionName)
 }
 
 func (a *App) StartProjects(labels []string) error {

@@ -46,6 +46,19 @@ func (l *Launcher) Launch(projects []model.Project) error {
 	return cmd.Start()
 }
 
+func (l *Launcher) LaunchNewSession(p model.Project, sessionName string) error {
+	shell := detectShell()
+	launchCmd := `claude --name "` + sessionName + `"`
+	args := []string{
+		"new-tab",
+		"--title", sessionName,
+		"--startingDirectory", p.Path,
+		shell, "-NoExit", "-Command", launchCmd,
+	}
+	cmd := exec.Command("wt", args...)
+	return cmd.Start()
+}
+
 func (l *Launcher) CheckWTAvailable() error {
 	_, err := exec.LookPath("wt")
 	if err != nil {

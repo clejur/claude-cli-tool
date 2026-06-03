@@ -38,8 +38,6 @@ func (a *App) FocusProject(pid int32, label string) error {
 		return err
 	}
 
-	tabTitle := tabPrefix + label
-
 	if label != "" {
 		hwnds := findAllWindowsByPID(uint32(termPID))
 		if len(hwnds) == 0 {
@@ -47,17 +45,17 @@ func (a *App) FocusProject(pid int32, label string) error {
 		}
 		if len(hwnds) == 1 {
 			forceSetForegroundWindow(hwnds[0])
-			focusTabByTitle(hwnds[0], tabTitle)
+			focusTabByTitle(hwnds[0], label)
 			return nil
 		}
-		hwnd, err := findWindowWithTab(hwnds, tabTitle)
+		hwnd, err := findWindowWithTab(hwnds, label)
 		if err != nil {
 			forceSetForegroundWindow(hwnds[0])
-			focusTabByTitle(hwnds[0], tabTitle)
+			focusTabByTitle(hwnds[0], label)
 			return nil
 		}
 		forceSetForegroundWindow(hwnd)
-		focusTabByTitle(hwnd, tabTitle)
+		focusTabByTitle(hwnd, label)
 		return nil
 	}
 
@@ -98,6 +96,7 @@ func forceSetForegroundWindow(hwnd uintptr) {
 }
 
 func focusTabByTitle(hwnd uintptr, title string) {
+	escapedTitle := strings.ReplaceAll(title, "'", "''")
 	script := fmt.Sprintf(`
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
@@ -108,12 +107,13 @@ $cond = New-Object System.Windows.Automation.PropertyCondition(
   [System.Windows.Automation.ControlType]::TabItem)
 $tabs = $el.FindAll([System.Windows.Automation.TreeScope]::Descendants, $cond)
 foreach ($tab in $tabs) {
-  if ($tab.Current.Name -eq '%s') {
+  $name = $tab.Current.Name
+  if ($name -eq '%s' -or $name -eq '%s %s') {
     $pattern = $tab.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern)
     $pattern.Select()
-    break
+    exit
   }
-}`, hwnd, strings.ReplaceAll(title, "'", "''"))
+}`, hwnd, escapedTitle, "✳", escapedTitle)
 
 	cmd := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", script)
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
@@ -127,6 +127,7 @@ func findWindowWithTab(hwnds []uintptr, title string) (uintptr, error) {
 		hwndStrs[i] = fmt.Sprintf("%d", h)
 	}
 
+	escapedTitle := strings.ReplaceAll(title, "'", "''")
 	script := fmt.Sprintf(`
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
@@ -138,12 +139,13 @@ foreach ($h in $hwnds) {
   $el = [System.Windows.Automation.AutomationElement]::FromHandle([IntPtr]::new($h))
   $tabs = $el.FindAll([System.Windows.Automation.TreeScope]::Descendants, $cond)
   foreach ($tab in $tabs) {
-    if ($tab.Current.Name -eq '%s') {
+    $name = $tab.Current.Name
+    if ($name -eq '%s' -or $name -eq '%s %s') {
       Write-Output $h
       exit
     }
   }
-}`, strings.Join(hwndStrs, ","), strings.ReplaceAll(title, "'", "''"))
+}`, strings.Join(hwndStrs, ","), escapedTitle, "✳", escapedTitle)
 
 	cmd := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", script)
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
@@ -206,4 +208,70 @@ func findWindowByPID(pid uint32) (uintptr, error) {
 		return 0, fmt.Errorf("no visible window for PID %d", pid)
 	}
 	return hwnds[0], nil
+}
+
+func (a *App) ListProjectTabs(pid int32, label string) ([]string, error) {
+	termPID, err := findTerminalPID(pid)
+	if err != nil {
+		return nil, err
+	}
+
+	hwnds := findAllWindowsByPID(uint32(termPID))
+	if len(hwnds) == 0 {
+		return nil, fmt.Errorf("no visible window for PID %d", termPID)
+	}
+
+	hwndStrs := make([]string, len(hwnds))
+	for i, h := range hwnds {
+		hwndStrs[i] = fmt.Sprintf("%d", h)
+	}
+
+	escapedLabel := strings.ReplaceAll(label, "'", "''")
+	script := fmt.Sprintf(`
+Add-Type -AssemblyName UIAutomationClient
+Add-Type -AssemblyName UIAutomationTypes
+$hwnds = @(%s)
+$cond = New-Object System.Windows.Automation.PropertyCondition(
+  [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+  [System.Windows.Automation.ControlType]::TabItem)
+$results = @()
+foreach ($h in $hwnds) {
+  $el = [System.Windows.Automation.AutomationElement]::FromHandle([IntPtr]::new($h))
+  $tabs = $el.FindAll([System.Windows.Automation.TreeScope]::Descendants, $cond)
+  foreach ($tab in $tabs) {
+    $name = $tab.Current.Name
+    if ($name -eq '%s' -or $name -like '%s#*' -or $name -eq '%s %s' -or $name -like '%s %s#*') {
+      $results += $name
+    }
+  }
+}
+$results | ForEach-Object { Write-Output $_ }`,
+		strings.Join(hwndStrs, ","),
+		escapedLabel, escapedLabel,
+		"✳", escapedLabel, "✳", escapedLabel)
+
+	cmd := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", script)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	out, err := cmd.Output()
+	if err != nil {
+		return []string{label}, nil
+	}
+
+	result := strings.TrimSpace(string(out))
+	if result == "" {
+		return []string{label}, nil
+	}
+
+	lines := strings.Split(result, "\n")
+	var tabs []string
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line != "" {
+			tabs = append(tabs, line)
+		}
+	}
+	if len(tabs) == 0 {
+		return []string{label}, nil
+	}
+	return tabs, nil
 }

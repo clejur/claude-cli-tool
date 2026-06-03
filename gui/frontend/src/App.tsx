@@ -14,7 +14,7 @@ import { useGroups } from './hooks/useGroups'
 import { useProjects } from './hooks/useProjects'
 import { useWorkspaces } from './hooks/useWorkspaces'
 import { useT } from './i18n/context'
-import { StopProject, FocusProject } from '../wailsjs/go/main/App'
+import { StopProject, FocusProject, StartNewSession, ListProjectTabs } from '../wailsjs/go/main/App'
 import { model } from '../wailsjs/go/models'
 
 function App() {
@@ -28,6 +28,7 @@ function App() {
   const [showSaveWorkspaceDialog, setShowSaveWorkspaceDialog] = useState(false)
   const [editingProject, setEditingProject] = useState<model.Project | null>(null)
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; project: model.Project } | null>(null)
+  const [contextTabs, setContextTabs] = useState<string[]>([])
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
   const { groups, refresh: refreshGroups, add: addGroup } = useGroups()
   const { projects, statuses, start, remove, add, edit, refresh } = useProjects(selectedGroup)
@@ -54,9 +55,20 @@ function App() {
     }
   }
 
-  const handleContextMenu = useCallback((e: React.MouseEvent, project: model.Project) => {
+  const handleContextMenu = useCallback(async (e: React.MouseEvent, project: model.Project) => {
     setContextMenu({ x: e.clientX, y: e.clientY, project })
-  }, [])
+    const status = statuses.get(project.id)
+    if (status?.running) {
+      try {
+        const tabs = await ListProjectTabs(status.pid, project.label)
+        setContextTabs(tabs || [])
+      } catch {
+        setContextTabs([])
+      }
+    } else {
+      setContextTabs([])
+    }
+  }, [statuses])
 
   const closeContextMenu = useCallback(() => setContextMenu(null), [])
 
@@ -67,9 +79,24 @@ function App() {
     const items: ContextMenuItem[] = []
 
     if (status?.running) {
+      if (contextTabs.length > 1) {
+        items.push({
+          label: t.focus,
+          onClick: () => {},
+          children: contextTabs.map(tab => ({
+            label: tab.replace(/^[^\w]*\s/, ''),
+            onClick: async () => { await FocusProject(status.pid, tab.replace(/^[^\w]*\s/, '')); closeContextMenu() },
+          })),
+        })
+      } else {
+        items.push({
+          label: t.focus,
+          onClick: async () => { await FocusProject(status.pid, p.label); closeContextMenu() },
+        })
+      }
       items.push({
-        label: t.focus,
-        onClick: async () => { await FocusProject(status.pid, p.label); closeContextMenu() },
+        label: t.newSession,
+        onClick: async () => { await StartNewSession(p.id); closeContextMenu() },
       })
       items.push({
         label: t.stop,
@@ -79,6 +106,10 @@ function App() {
       items.push({
         label: t.start,
         onClick: () => { start(p.id); closeContextMenu() },
+      })
+      items.push({
+        label: t.newSession,
+        onClick: async () => { await StartNewSession(p.id); closeContextMenu() },
       })
     }
 

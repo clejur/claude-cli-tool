@@ -24,6 +24,7 @@ export const locales = {
     edit: 'Edit',
     del: 'Del',
     stop: 'Stop',
+    newSession: 'New Session',
     moveToGroup: 'Move to group',
 
     // AddProjectDialog
@@ -120,6 +121,7 @@ export const locales = {
     edit: '编辑',
     del: '删除',
     stop: '停止',
+    newSession: '新会话',
     moveToGroup: '移动到分组',
 
     addProjectTitle: '添加项目',

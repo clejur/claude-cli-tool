@@ -94,6 +94,40 @@ func ScanProcesses(scanAll bool) ([]ProcessInfo, error) {
 	return infos, nil
 }
 
+func CountProcessesAtPath(path string) int {
+	procs, err := process.Processes()
+	if err != nil {
+		return 0
+	}
+	target := strings.ToLower(filepath.Clean(path))
+	count := 0
+	for _, p := range procs {
+		name, err := p.Name()
+		if err != nil {
+			continue
+		}
+		lower := strings.ToLower(name)
+		if lower == "claude" || lower == "claude.exe" || isClaudeExeOld(lower) {
+			cwd, err := p.Cwd()
+			if err != nil {
+				continue
+			}
+			if strings.ToLower(filepath.Clean(cwd)) == target {
+				count++
+			}
+		} else if isShellProcess(lower) {
+			cmdline, _ := p.CmdlineSlice()
+			if cmdlineContainsClaude(cmdline) {
+				cwd := resolveCwd(p, cmdline)
+				if strings.ToLower(filepath.Clean(cwd)) == target {
+					count++
+				}
+			}
+		}
+	}
+	return count
+}
+
 func isShellProcess(lower string) bool {
 	return lower == "pwsh" || lower == "pwsh.exe" ||
 		lower == "powershell" || lower == "powershell.exe" ||

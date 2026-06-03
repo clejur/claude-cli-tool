@@ -8,10 +8,12 @@ Available as both a CLI tool and a GUI desktop app.
 
 - **Project Management** — Save, edit, and organize Claude Code project configurations
 - **One-click Launch** — Start projects as Windows Terminal tabs with `claude --name` for session naming, auto-detects PowerShell 7 (pwsh)
-- **Focus Running Projects** — Bring the correct terminal window to foreground and switch to the exact tab (supports multiple windows)
+- **Focus Running Projects** — Bring the correct terminal window to foreground and switch to the exact tab (supports multiple windows and multiple sessions per project)
+- **Multi-Session** — Launch additional Claude sessions for the same project (without `--continue`), named with `#N` suffix
 - **Groups** — Organize projects into named groups for batch operations
 - **Workspaces** — Save snapshots of running projects and restore them together
-- **Process Detection** — Detect running Claude processes and import them (auto-named by folder)
+- **Process Detection** — Detect running Claude processes and import them (auto-named by folder, supports `claude.exe.old.*` from npm updates)
+- **Scan All Terminals** — Optional setting to scan all open terminal sessions, not just Claude ones
 - **Duplicate Prevention** — Rejects adding projects with duplicate labels or paths
 - **Status Monitoring** — See which projects are currently running (with PID)
 - **GUI Desktop App** — Full-featured Wails + React interface with system tray
@@ -123,12 +125,13 @@ The desktop app provides all CLI capabilities plus:
 - **Focus Button** — For running projects, click "Focus" to bring the terminal window to foreground and switch to the correct tab (works even when minimized, supports multiple terminal windows)
 - **Folder Picker** — Browse button on path input to select project directory
 - **Search** — Filter projects by label or path
-- **Right-click Context Menu** — Focus/Stop, Edit, Move to group, Delete
+- **Right-click Context Menu** — Focus/Stop, New Session, Edit, Move to group, Delete
+- **Multi-Session Focus** — When a project has multiple sessions, focus sub-menu lists all tabs for selection
 - **Sidebar** — Collapsible "Projects" and "Workspaces" sections with group navigation
 - **Workspace Detail** — Click a workspace to see its projects, selectively start them, or edit the workspace contents
 - **Save Workspace** — Select any projects (running or not) via checkboxes to save as workspace
 - **Import Dialog** — Detect and bulk-import unregistered Claude processes
-- **Settings Page** — Language toggle (EN/ZH), auto-start, close-to-tray toggle, config export/import
+- **Settings Page** — Language toggle (EN/ZH), auto-start, close-to-tray toggle, scan all terminals toggle, config export/import
 - **Command Presets** — Toggle `--continue`, `--resume`, `--fork-session` flags when adding/editing projects
 
 ### Global Hotkey

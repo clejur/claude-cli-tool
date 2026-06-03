@@ -40,12 +40,12 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
             {item.children && <span className="float-right text-content-subtle">▸</span>}
           </button>
           {item.children && (
-            <div className="absolute left-full top-0 hidden group-hover/menu:block bg-white border border-border rounded-2xl shadow-xl py-1.5 min-w-[120px]">
+            <div className="absolute left-full top-0 hidden group-hover/menu:block bg-white border border-border rounded-2xl shadow-xl py-1.5 min-w-[120px] max-w-[280px]">
               {item.children.map((child, j) => (
                 <button
                   key={j}
                   onClick={child.onClick}
-                  className="w-full text-left px-4 py-2 text-sm font-medium text-content hover:bg-surface-alt transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-content hover:bg-surface-alt transition-colors truncate"
                 >
                   {child.label}
                 </button>
