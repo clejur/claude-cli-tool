@@ -19,7 +19,7 @@ var importCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		all, _ := cmd.Flags().GetBool("all")
 
-		processes, err := status.ScanProcesses()
+		processes, err := status.ScanProcesses(false)
 		if err != nil {
 			return fmt.Errorf("scanning processes: %w", err)
 		}

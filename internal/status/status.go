@@ -37,7 +37,7 @@ func MatchProjects(projects []model.Project, processes []ProcessInfo) []ProjectS
 	return results
 }
 
-func ScanProcesses() ([]ProcessInfo, error) {
+func ScanProcesses(scanAll bool) ([]ProcessInfo, error) {
 	procs, err := process.Processes()
 	if err != nil {
 		return nil, err
@@ -61,7 +61,10 @@ func ScanProcesses() ([]ProcessInfo, error) {
 			cwd = c
 		} else if isShellProcess(lower) {
 			cmdline, err := p.CmdlineSlice()
-			if err != nil || !cmdlineContainsClaude(cmdline) {
+			if err != nil {
+				continue
+			}
+			if !scanAll && !cmdlineContainsClaude(cmdline) {
 				continue
 			}
 			cwd = resolveCwd(p, cmdline)

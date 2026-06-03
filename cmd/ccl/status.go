@@ -16,7 +16,7 @@ var statusCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		groupFilter, _ := cmd.Flags().GetString("group")
 
-		processes, err := status.ScanProcesses()
+		processes, err := status.ScanProcesses(false)
 		if err != nil {
 			return fmt.Errorf("failed to scan processes: %w", err)
 		}

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useT, useLang } from '../i18n/context'
-import { GetAutoStart, SetAutoStart, GetCloseToTray, SetCloseToTray, GetHotkey, SetHotkey, ExportConfig, ImportConfig } from '../../wailsjs/go/main/App'
+import { GetAutoStart, SetAutoStart, GetCloseToTray, SetCloseToTray, GetScanAllTerminals, SetScanAllTerminals, GetHotkey, SetHotkey, ExportConfig, ImportConfig } from '../../wailsjs/go/main/App'
 
 interface SettingsPageProps {
   onBack: () => void
@@ -12,12 +12,14 @@ export function SettingsPage({ onBack, onImport }: SettingsPageProps) {
   const { lang, setLang } = useLang()
   const [autoStart, setAutoStartState] = useState(false)
   const [closeToTray, setCloseToTrayState] = useState(true)
+  const [scanAllTerminals, setScanAllTerminalsState] = useState(false)
   const [hotkey, setHotkeyState] = useState('Ctrl+Shift+C')
   const [recording, setRecording] = useState(false)
 
   useEffect(() => {
     GetAutoStart().then(v => setAutoStartState(v))
     GetCloseToTray().then(v => setCloseToTrayState(v))
+    GetScanAllTerminals().then(v => setScanAllTerminalsState(v))
     GetHotkey().then(v => setHotkeyState(v))
   }, [])
 
@@ -56,6 +58,11 @@ export function SettingsPage({ onBack, onImport }: SettingsPageProps) {
   const handleCloseToTray = async (checked: boolean) => {
     await SetCloseToTray(checked)
     setCloseToTrayState(checked)
+  }
+
+  const handleScanAllTerminals = async (checked: boolean) => {
+    await SetScanAllTerminals(checked)
+    setScanAllTerminalsState(checked)
   }
 
   return (
@@ -122,6 +129,23 @@ export function SettingsPage({ onBack, onImport }: SettingsPageProps) {
               >
                 <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
                   closeToTray ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between py-2">
+              <div>
+                <div className="text-sm text-content font-medium">{t.scanAllTerminals}</div>
+                <div className="text-xs text-content-muted mt-0.5">{t.scanAllTerminalsDesc}</div>
+              </div>
+              <button
+                onClick={() => handleScanAllTerminals(!scanAllTerminals)}
+                className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
+                  scanAllTerminals ? 'bg-secondary' : 'bg-gray-300'
+                }`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
+                  scanAllTerminals ? 'translate-x-5' : 'translate-x-0'
                 }`} />
               </button>
             </div>

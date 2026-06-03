@@ -114,7 +114,7 @@ func (a *App) GetStatus() ([]ProjectStatusResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	processes, err := status.ScanProcesses()
+	processes, err := status.ScanProcesses(false)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,11 @@ type DetectedProcess struct {
 }
 
 func (a *App) DetectUnregistered() ([]DetectedProcess, error) {
-	processes, err := status.ScanProcesses()
+	cfg, err := a.store.Load()
+	if err != nil {
+		return nil, err
+	}
+	processes, err := status.ScanProcesses(cfg.Settings.ScanAllTerminals)
 	if err != nil {
 		return nil, err
 	}
@@ -246,6 +250,23 @@ func (a *App) SetHotkey(v string) error {
 	}
 	a.reRegisterHotkey(v)
 	return nil
+}
+
+func (a *App) GetScanAllTerminals() (bool, error) {
+	cfg, err := a.store.Load()
+	if err != nil {
+		return false, err
+	}
+	return cfg.Settings.ScanAllTerminals, nil
+}
+
+func (a *App) SetScanAllTerminals(v bool) error {
+	cfg, err := a.store.Load()
+	if err != nil {
+		return err
+	}
+	cfg.Settings.ScanAllTerminals = v
+	return a.store.Save(cfg)
 }
 
 // Directory picker
