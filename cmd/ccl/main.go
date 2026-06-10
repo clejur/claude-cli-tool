@@ -6,11 +6,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/clejur/claude-launcher/internal/config"
-	"github.com/clejur/claude-launcher/internal/group"
-	"github.com/clejur/claude-launcher/internal/launcher"
-	"github.com/clejur/claude-launcher/internal/project"
-	"github.com/clejur/claude-launcher/internal/workspace"
+	"github.com/clejur/claude-cli-tool/internal/config"
+	"github.com/clejur/claude-cli-tool/internal/group"
+	"github.com/clejur/claude-cli-tool/internal/launcher"
+	"github.com/clejur/claude-cli-tool/internal/project"
+	"github.com/clejur/claude-cli-tool/internal/workspace"
 )
 
 var (

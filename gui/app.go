@@ -8,13 +8,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/clejur/claude-launcher/internal/config"
-	"github.com/clejur/claude-launcher/internal/group"
-	"github.com/clejur/claude-launcher/internal/launcher"
-	"github.com/clejur/claude-launcher/internal/model"
-	"github.com/clejur/claude-launcher/internal/project"
-	"github.com/clejur/claude-launcher/internal/status"
-	"github.com/clejur/claude-launcher/internal/workspace"
+	"github.com/clejur/claude-cli-tool/internal/config"
+	"github.com/clejur/claude-cli-tool/internal/group"
+	"github.com/clejur/claude-cli-tool/internal/launcher"
+	"github.com/clejur/claude-cli-tool/internal/model"
+	"github.com/clejur/claude-cli-tool/internal/project"
+	"github.com/clejur/claude-cli-tool/internal/status"
+	"github.com/clejur/claude-cli-tool/internal/workspace"
 	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 

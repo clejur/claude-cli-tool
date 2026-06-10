@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/clejur/claude-launcher/internal/config"
+	"github.com/clejur/claude-cli-tool/internal/config"
 )
 
 func newTestService(t *testing.T) *Service {

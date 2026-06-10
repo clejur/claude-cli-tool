@@ -1,4 +1,4 @@
-module github.com/clejur/claude-launcher
+module github.com/clejur/claude-cli-tool
 
 go 1.25.0
 

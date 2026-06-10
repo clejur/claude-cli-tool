@@ -32,7 +32,7 @@ Available as both a CLI tool and a GUI desktop app.
 ### CLI
 
 ```bash
-go install github.com/clejur/claude-launcher/cmd/ccl@latest
+go install github.com/clejur/claude-cli-tool/cmd/ccl@latest
 ```
 
 ### GUI

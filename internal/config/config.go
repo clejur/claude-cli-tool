@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/clejur/claude-launcher/internal/model"
+	"github.com/clejur/claude-cli-tool/internal/model"
 )
 
 type Store struct {

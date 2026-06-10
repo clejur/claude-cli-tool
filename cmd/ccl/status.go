@@ -5,8 +5,8 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/clejur/claude-launcher/internal/model"
-	"github.com/clejur/claude-launcher/internal/status"
+	"github.com/clejur/claude-cli-tool/internal/model"
+	"github.com/clejur/claude-cli-tool/internal/status"
 	"github.com/spf13/cobra"
 )
 

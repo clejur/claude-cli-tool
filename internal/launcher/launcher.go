@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/clejur/claude-launcher/internal/model"
+	"github.com/clejur/claude-cli-tool/internal/model"
 )
 
 type Launcher struct{}

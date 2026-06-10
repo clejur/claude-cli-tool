@@ -3,7 +3,7 @@ package group
 import (
 	"fmt"
 
-	"github.com/clejur/claude-launcher/internal/config"
+	"github.com/clejur/claude-cli-tool/internal/config"
 )
 
 type Service struct {

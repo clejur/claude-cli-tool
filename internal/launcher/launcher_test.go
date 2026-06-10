@@ -3,7 +3,7 @@ package launcher
 import (
 	"testing"
 
-	"github.com/clejur/claude-launcher/internal/model"
+	"github.com/clejur/claude-cli-tool/internal/model"
 )
 
 func TestBuildSingleCommand(t *testing.T) {

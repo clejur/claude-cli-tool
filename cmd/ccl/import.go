@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/clejur/claude-launcher/internal/status"
+	"github.com/clejur/claude-cli-tool/internal/status"
 )
 
 var importCmd = &cobra.Command{

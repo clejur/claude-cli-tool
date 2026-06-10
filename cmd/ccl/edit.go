@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/clejur/claude-launcher/internal/project"
+	"github.com/clejur/claude-cli-tool/internal/project"
 	"github.com/spf13/cobra"
 )
 

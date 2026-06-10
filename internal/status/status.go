@@ -6,7 +6,7 @@ import (
 
 	"github.com/shirou/gopsutil/v3/process"
 
-	"github.com/clejur/claude-launcher/internal/model"
+	"github.com/clejur/claude-cli-tool/internal/model"
 )
 
 type ProcessInfo struct {
