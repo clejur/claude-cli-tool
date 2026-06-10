@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { locales, type Locale, type Translations } from './locales'
+import { SetLanguage } from '../../wailsjs/go/main/App'
 
 interface I18nContextValue {
   lang: Locale
@@ -22,6 +23,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const setLang = (l: Locale) => {
     setLangState(l)
     localStorage.setItem('lang', l)
+    SetLanguage(l)
   }
 
   return (

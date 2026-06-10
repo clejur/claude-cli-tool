@@ -1,5 +1,7 @@
 # Claude CLI Launcher
 
+[中文文档](README_zh.md)
+
 Claude CLI Launcher (`ccl`) is a Windows tool for managing and quickly launching Claude Code terminal sessions. It saves project configurations (directory path, tab label, launch command) and restores them with a single command — no more re-navigating after a reboot.
 
 Available as both a CLI tool and a GUI desktop app.

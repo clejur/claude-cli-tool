@@ -21,6 +21,7 @@ type Settings struct {
 	CloseToTray      bool   `json:"closeToTray"`
 	Hotkey           string `json:"hotkey"`
 	ScanAllTerminals bool   `json:"scanAllTerminals"`
+	Language         string `json:"language"`
 }
 
 type Config struct {

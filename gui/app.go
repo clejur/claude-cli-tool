@@ -281,6 +281,30 @@ func (a *App) SetScanAllTerminals(v bool) error {
 	return a.store.Save(cfg)
 }
 
+func (a *App) GetLanguage() (string, error) {
+	cfg, err := a.store.Load()
+	if err != nil {
+		return "en", err
+	}
+	if cfg.Settings.Language == "" {
+		return "en", nil
+	}
+	return cfg.Settings.Language, nil
+}
+
+func (a *App) SetLanguage(v string) error {
+	cfg, err := a.store.Load()
+	if err != nil {
+		return err
+	}
+	cfg.Settings.Language = v
+	if err := a.store.Save(cfg); err != nil {
+		return err
+	}
+	a.updateTrayLanguage(v)
+	return nil
+}
+
 // Directory picker
 
 func (a *App) SelectDirectory() (string, error) {

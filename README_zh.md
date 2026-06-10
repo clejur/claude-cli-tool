@@ -1,5 +1,7 @@
 # Claude CLI Launcher
 
+[English](README.md)
+
 Claude CLI Launcher（`ccl`）是一个 Windows 工具，用于管理和快速启动 Claude Code 终端会话。它保存项目配置（目录路径、标签名、启动命令），重启电脑后可以一键恢复所有终端项目。
 
 提供 CLI 命令行工具和 GUI 桌面应用两种使用方式。
