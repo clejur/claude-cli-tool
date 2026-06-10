@@ -179,7 +179,7 @@ claude-cli-launcher/
 │   ├── hotkey.go        # 全局热键（Ctrl+Shift+C）
 │   ├── autostart.go     # Windows 注册表开机自启
 │   ├── singleton.go     # 单实例互斥锁
-│   ├── tray.go          # 系统托盘（energye/systray）
+│   ├── tray.go          # 系统托盘（getlantern/systray）
 │   └── frontend/        # React + TypeScript + Tailwind
 │       └── src/
 │           ├── components/  # UI 组件

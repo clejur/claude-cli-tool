@@ -179,7 +179,7 @@ claude-cli-launcher/
 │   ├── hotkey.go        # Global hotkey (Ctrl+Shift+C)
 │   ├── autostart.go     # Windows registry auto-start
 │   ├── singleton.go     # Single instance mutex
-│   ├── tray.go          # System tray (energye/systray)
+│   ├── tray.go          # System tray (getlantern/systray)
 │   └── frontend/        # React + TypeScript + Tailwind
 │       └── src/
 │           ├── components/  # UI components
